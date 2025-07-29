@@ -1,0 +1,34 @@
+{
+	"name": "@token-ring/ghost-io",
+	"version": "0.1.0",
+	"dependencies": {
+		"@lexical/headless": "^0.33.1",
+		"@lexical/markdown": "^0.33.1",
+		"@token-ring/chat": "0.1.0",
+		"@token-ring/eslint-config": "0.0.0",
+		"@token-ring/registry": "0.1.0",
+		"@tryghost/admin-api": "^1.14.0",
+		"@tryghost/content-api": "^1.12.0"
+	},
+	"devDependencies": {
+		"@token-ring/eslint-config": "0.0.0",
+		"vitest": "^3.2.4",
+		"@vitest/coverage-v8": "^3.2.4"
+	},
+	"exports": {
+		".": "./index.js",
+		"./*": "./*.js"
+	},
+	"license": "MIT",
+	"scripts": {
+		"lint": "eslint .",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage",
+		"test:integration": "vitest run runShellCommand.integration.test.js",
+		"test:e2e": "vitest run runShellCommand.e2e.test.js",
+		"test:all": "vitest run && node test/integration-runner.js",
+		"eslint": "eslint --fix ./"
+	},
+	"type": "module"
+}
