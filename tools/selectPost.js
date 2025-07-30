@@ -1,6 +1,6 @@
-import GhostIOService from "../GhostIOService.js";
 import ChatService from "@token-ring/chat/ChatService";
 import { z } from "zod";
+import GhostIOService from "../GhostIOService.js";
 
 /**
  * Selects a post for subsequent operations or clears the current selection

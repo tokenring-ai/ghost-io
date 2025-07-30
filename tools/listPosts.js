@@ -1,6 +1,6 @@
-import GhostIOService from "../GhostIOService.js";
 import ChatService from "@token-ring/chat/ChatService";
 import { z } from "zod";
+import GhostIOService from "../GhostIOService.js";
 
 /**
  * Lists posts from the Ghost.io platform

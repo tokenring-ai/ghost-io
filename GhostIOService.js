@@ -1,8 +1,8 @@
-import { Service } from "@token-ring/registry";
+import { HumanInterfaceService } from "@token-ring/chat";
 import ChatService from "@token-ring/chat/ChatService";
+import { Service } from "@token-ring/registry";
 import GhostAdminAPI from "@tryghost/admin-api";
 import GhostContentAPI from "@tryghost/content-api";
-import { HumanInterfaceService } from "@token-ring/chat";
 
 /**
  * GhostIOService provides an interface for interacting with the Ghost.io platform.

@@ -1,7 +1,7 @@
-import GhostIOService from "../GhostIOService.js";
 import ChatService from "@token-ring/chat/ChatService";
 import { marked } from "marked";
 import { z } from "zod";
+import GhostIOService from "../GhostIOService.js";
 
 /**
  * Creates a new post on the Ghost.io platform
