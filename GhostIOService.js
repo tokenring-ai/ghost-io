@@ -1,4 +1,3 @@
-import { HumanInterfaceService } from "@token-ring/chat";
 import ChatService from "@token-ring/chat/ChatService";
 import { Service } from "@token-ring/registry";
 import GhostAdminAPI from "@tryghost/admin-api";

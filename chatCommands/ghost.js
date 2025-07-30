@@ -73,7 +73,7 @@ async function selectPost(ghostService, chatService, humanInterfaceService) {
 				const selectedPost = formattedPosts.find(
 					(post) => post.value === selectedValue,
 				);
-				if (selectedPost && selectedPost.data) {
+				if (selectedPost?.data) {
 					// Store the selected post
 					ghostService.setCurrentPost(selectedPost.data);
 					chatService.systemLine(`Selected post: "${selectedPost.data.title}"`);

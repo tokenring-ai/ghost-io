@@ -55,9 +55,9 @@ export async function execute({ title, content, tags }, registry) {
 				post: updatedPost,
 				message: `Post "${updatedPost.title}" updated successfully.`,
 				changes: {
-					title: title ? true : false,
-					content: content ? true : false,
-					tags: tags ? true : false,
+					title: !!title,
+					content: !!content,
+					tags: !!tags,
 				},
 			};
 		} else {

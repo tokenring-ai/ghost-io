@@ -1,6 +1,5 @@
-export { default as GhostIOService } from "./GhostIOService.js";
-
 export * as chatCommands from "./chatCommands.js";
+export { default as GhostIOService } from "./GhostIOService.js";
 export * as tools from "./tools.js";
 
 export const name = "@token-ring/ghost-io";

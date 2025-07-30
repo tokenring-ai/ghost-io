@@ -9,7 +9,7 @@ import GhostIOService from "../GhostIOService.js";
  * @param {TokenRingRegistry} registry - The package registry
  * @returns {Promise<Object>} - A promise that resolves to the published post
  */
-export async function execute(params, registry) {
+export async function execute(_params, registry) {
 	const chatService = registry.requireFirstServiceByType(ChatService);
 	const ghostService = registry.requireFirstServiceByType(GhostIOService);
 
