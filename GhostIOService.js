@@ -121,7 +121,7 @@ export default class GhostIOService extends Service {
 
 		try {
 			// In a real implementation, we would use the Ghost Content SDK to fetch posts
-			return await this.contentAPI.posts.browse({ limit: "all" });
+			return await this.adminAPI.posts.browse({ limit: "all" });
 		} catch (error) {
 			console.error("Failed to fetch posts:", error);
 			throw new Error(`Failed to fetch posts: ${error.message}`);

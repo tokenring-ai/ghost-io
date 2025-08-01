@@ -4,11 +4,15 @@
 	"dependencies": {
 		"@lexical/headless": "^0.33.1",
 		"@lexical/markdown": "^0.33.1",
+		"@token-ring/ai-client": "0.1.0",
 		"@token-ring/chat": "0.1.0",
 		"@token-ring/eslint-config": "0.0.0",
+		"@token-ring/filesystem": "0.1.0",
 		"@token-ring/registry": "0.1.0",
 		"@tryghost/admin-api": "^1.14.0",
-		"@tryghost/content-api": "^1.12.0"
+		"@tryghost/content-api": "^1.12.0",
+		"form-data": "^4.0.4",
+		"uuid": "^11.1.0"
 	},
 	"devDependencies": {
 		"@token-ring/eslint-config": "0.0.0",

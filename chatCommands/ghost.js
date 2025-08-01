@@ -21,7 +21,7 @@ export const description =
 async function selectPost(ghostService, chatService, humanInterfaceService) {
 	try {
 		// Fetch all posts from Ghost.io API
-		const posts = await ghostService.getAllPosts();
+		let posts = await ghostService.getAllPosts();
 
 		if (!posts || posts.length === 0) {
 			chatService.systemLine("No posts found on your Ghost.io site.");
