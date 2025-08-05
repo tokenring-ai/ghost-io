@@ -27,6 +27,9 @@ export async function execute({ title, content, tags = [] }, registry) {
 		};
 	}
 
+	// Strip the header from the post;
+	content = content.replace(/^\s*#.*/, "").trim();
+
 	try {
 		// Create the post
 		const post = await ghostService.createPost({
@@ -66,7 +69,11 @@ export const description = "Create a new article/post on the Ghost.io platform";
 
 export const parameters = z.object({
 	title: z.string().describe("The title of the post"),
-	content: z.string().describe("The content of the post in Markdown format"),
+	content: z
+		.string()
+		.describe(
+			"The content of the post in Markdown format. The title of the post goes in the title tag, NOT inside the content",
+		),
 	tags: z.array(z.string()).describe("Tags for the post").optional(),
 	/*published: z
     .boolean()
