@@ -1,3 +1,4 @@
+// @ts-nocheck
 import ChatService from "@token-ring/chat/ChatService";
 import FileSystemService from "@token-ring/filesystem/FileSystemService";
 import ModelRegistry from "@token-ring/ai-client/ModelRegistry";
@@ -7,8 +8,6 @@ import { Buffer } from "node:buffer";
 import GhostIOService from "../GhostIOService.js";
 import FormData from "form-data";
 import { ModelTypeRegistry } from "@token-ring/ai-client/ModelTypeRegistry";
-import AIImageGenerationClient from "@token-ring/ai-client/client/AIImageGenerationClient";
-import { Readable } from "node:stream";
 
 /**
  * Generates an image for a Ghost.io post using AI image generation
