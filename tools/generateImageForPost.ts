@@ -5,7 +5,7 @@ import ModelRegistry from "@token-ring/ai-client/ModelRegistry";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
 import { Buffer } from "node:buffer";
-import GhostIOService from "../GhostIOService.js";
+import GhostIOService from "../GhostIOService.ts";
 import FormData from "form-data";
 import { ModelTypeRegistry } from "@token-ring/ai-client/ModelTypeRegistry";
 

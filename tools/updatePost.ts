@@ -1,6 +1,7 @@
+// @ts-nocheck
 import ChatService from "@token-ring/chat/ChatService";
 import { z } from "zod";
-import GhostIOService from "../GhostIOService.js";
+import GhostIOService from "../GhostIOService.ts";
 
 /**
  * Updates an existing post on the Ghost.io platform

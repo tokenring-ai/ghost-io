@@ -28,7 +28,7 @@ export default class GhostIOService extends Service {
 	 * @param {string} options.adminApiKey - API key for the Ghost Admin API
 	 * @param {string} options.contentApiKey - API key for the Ghost Content API
 	 */
-	constructor({ url, adminApiKey, contentApiKey } = {}) {
+	constructor({ url, adminApiKey, contentApiKey }) {
 		super();
 
 		if (!url) {

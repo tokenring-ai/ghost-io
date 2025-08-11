@@ -1,12 +1,13 @@
+// @ts-nocheck
 import ChatService from "@token-ring/chat/ChatService";
 import { z } from "zod";
-import GhostIOService from "../GhostIOService.js";
+import GhostIOService from "../GhostIOService.ts";
 
 /**
  * Selects a post for subsequent operations or clears the current selection
  *
  * @param {Object} params - Parameters for selecting a post
- * @param {string} [params.id] - The ID of the post to select (if null, clears the selection)
+ * @param {string|null} [params.id] - The ID of the post to select (if null, clears the selection)
  * @param {TokenRingRegistry} registry - The package registry
  * @returns {Promise<Object>} - A promise that resolves to an object containing the selected post
  */

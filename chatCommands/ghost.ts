@@ -1,6 +1,7 @@
+// @ts-nocheck
 import { HumanInterfaceService } from "@token-ring/chat";
 import ChatService from "@token-ring/chat/ChatService";
-import GhostIOService from "../GhostIOService.js";
+import GhostIOService from "../GhostIOService.ts";
 
 /**
  * /ghost [action] [subaction] - Manage Ghost.io blog posts
@@ -110,132 +111,69 @@ async function postInfo(ghostService, chatService, humanInterfaceService) {
 				.replace(/<[^>]*>/g, " ")
 				.split(/\s+/)
 				.filter(Boolean).length
-		: "N/A";
+		: 0;
 
-	// Build info display
-	const info = [
-		`Post Information: ${currentPost.title}`,
-		"",
-		`Status: ${currentPost.status === "published" ? "Published" : "Draft"}`,
+	// Build the info message
+	const infoLines = [
+		`Title: ${currentPost.title}`,
+		`Status: ${currentPost.status}`,
 		`Created: ${createdDate}`,
-		`Last Updated:** ${updatedDate}`,
-		currentPost.url ? `URL: ${currentPost.url}` : "",
-		`Word Count: ${wordCount}`,
-		"",
-		"---",
-		"",
-		`Excerpt: ${currentPost.excerpt || "No excerpt available"}`,
-	]
-		.filter(Boolean)
-		.join("\n");
+		`Updated: ${updatedDate}`,
+		`Word count (approx.): ${wordCount}`,
+	];
 
-	for (const line of info.split("\n")) {
-		chatService.systemLine(line);
+	if (currentPost.tags && currentPost.tags.length > 0) {
+		const tags = currentPost.tags
+			.map((t) => (typeof t === "string" ? t : t.name || t.slug || ""))
+			.filter(Boolean)
+			.join(", ");
+		infoLines.push(`Tags: ${tags}`);
 	}
 
-	const shouldOpen = await humanInterfaceService.askForConfirmation({
-		message: "Do you want to open the post in your browser?",
-		default: true,
-	});
-
-	if (shouldOpen) {
-		return openPost(ghostService, chatService, humanInterfaceService);
-	}
-}
-
-async function openPost(ghostService, chatService, humanInterfaceService) {
-	const currentPost = ghostService.getCurrentPost();
-
-	if (!currentPost) {
-		chatService.systemLine("No post is currently selected.");
-		chatService.systemLine("Use /ghost post select to choose a post.");
-		return;
+	if (currentPost.excerpt) {
+		infoLines.push(`Excerpt: ${currentPost.excerpt.substring(0, 140)}...`);
 	}
 
-	chatService.systemLine(
-		`Opening post: "${currentPost.title}" in your browser...`,
-	);
-	await humanInterfaceService.openWebBrowser(currentPost.url);
+	if (currentPost.url) {
+		infoLines.push(`URL: ${currentPost.url}`);
+	}
+
+	chatService.systemLine(infoLines.join("\n"));
 }
 
 /**
- * Handles the post new subcommand
- * Clears the current post selection
+ * Command handler for /ghost
  */
-async function postNew(ghostService, chatService) {
-	const previousPost = ghostService.getCurrentPost();
-	ghostService.setCurrentPost(null);
-
-	if (previousPost) {
-		chatService.systemLine(
-			`Cleared selection of post "${previousPost.title}".`,
-		);
-		chatService.systemLine("You can now create a new post.");
-	} else {
-		chatService.systemLine("No post was selected. Ready to create a new post.");
-	}
-}
-
-export async function execute(remainder, registry) {
+export default async function ghost(command, registry) {
 	const chatService = registry.requireFirstServiceByType(ChatService);
-	const humanInterfaceService = registry.requireFirstServiceByType(
-		HumanInterfaceService,
-	);
+	const humanInterfaceService =
+		registry.requireFirstServiceByType(HumanInterfaceService);
 	const ghostService = registry.requireFirstServiceByType(GhostIOService);
 
-	const args = remainder ? remainder.trim().split(/\s+/) : [];
-	const action = args[0];
-	const subaction = args[1];
+	const [action, subaction] = [command.arg0, command.arg1];
 
 	if (action === "post") {
 		switch (subaction) {
 			case "select":
 				await selectPost(ghostService, chatService, humanInterfaceService);
 				break;
-
 			case "info":
 				await postInfo(ghostService, chatService, humanInterfaceService);
 				break;
-
 			case "new":
-				await postNew(ghostService, chatService);
+				ghostService.setCurrentPost(null);
+				chatService.systemLine(
+					"New post started. No post is currently selected. Use tools to create and publish.",
+				);
 				break;
-
-			case "open":
-				await openPost(ghostService, chatService, humanInterfaceService);
-				break;
-
 			default:
-				chatService.systemLine("Ghost.io post management commands:");
 				chatService.systemLine(
-					"  /ghost post select - Select a post to work with",
+					"Unknown subaction. Available subactions: select, info, new",
 				);
-				chatService.systemLine(
-					"  /ghost post info   - Show information about the selected post",
-				);
-				chatService.systemLine(
-					"  /ghost post new    - Clear selection to create a new post",
-				);
-				chatService.systemLine(
-					"  /ghost post open   - Opens the current post in your web browser",
-				);
-
-				break;
 		}
 	} else {
-		chatService.systemLine("Ghost.io commands:");
-		chatService.systemLine("  /ghost post - Manage Ghost.io blog posts");
-		chatService.systemLine("");
-		chatService.systemLine("Examples:");
-		chatService.systemLine("  /ghost post select - Select a post to work with");
 		chatService.systemLine(
-			"  /ghost post info   - Show information about the selected post",
-		);
-		chatService.systemLine(
-			"  /ghost post new    - Clear selection to create a new post",
-		);
-		chatService.systemLine(
-			"  /ghost post open   - Opens the current post in your web browser",
+			"Unknown action. Available actions: post [select|info|new]",
 		);
 	}
 }

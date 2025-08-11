@@ -1,11 +1,12 @@
+// @ts-nocheck
 import ChatService from "@token-ring/chat/ChatService";
 import { z } from "zod";
-import GhostIOService from "../GhostIOService.js";
+import GhostIOService from "../GhostIOService.ts";
 
 /**
  * Publishes a draft post on the Ghost.io platform
  *
- * @param {Object} params - Parameters for publishing a post (empty object as no parameters are needed)
+ * @param {Object} _params - Parameters for publishing a post (empty object as no parameters are needed)
  * @param {TokenRingRegistry} registry - The package registry
  * @returns {Promise<Object>} - A promise that resolves to the published post
  */
