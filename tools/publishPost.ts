@@ -1,16 +1,40 @@
-// @ts-nocheck
+
 import ChatService from "@token-ring/chat/ChatService";
 import { z } from "zod";
 import GhostIOService from "../GhostIOService.ts";
+import { Registry } from "@token-ring/registry";
+
+interface PublishPostParams {
+    // No parameters needed for this tool
+}
+
+interface GhostPost {
+    id: string;
+    title: string;
+    status: string;
+    url?: string | null;
+    [key: string]: any;
+}
+
+interface PublishPostSuccess {
+    success: true;
+    post: GhostPost;
+    message: string;
+    url: string | null;
+}
+
+interface PublishPostError {
+    success: false;
+    error: string;
+    suggestion: string;
+}
+
+type PublishPostResult = PublishPostSuccess | PublishPostError;
 
 /**
  * Publishes a draft post on the Ghost.io platform
- *
- * @param {Object} _params - Parameters for publishing a post (empty object as no parameters are needed)
- * @param {TokenRingRegistry} registry - The package registry
- * @returns {Promise<Object>} - A promise that resolves to the published post
  */
-export async function execute(_params, registry) {
+export async function execute(_params: PublishPostParams, registry: Registry): Promise<PublishPostResult> {
 	const chatService = registry.requireFirstServiceByType(ChatService);
 	const ghostService = registry.requireFirstServiceByType(GhostIOService);
 
@@ -57,10 +81,11 @@ export async function execute(_params, registry) {
 			};
 		}
 	} catch (error) {
-		chatService.errorLine(`[Ghost.io] Error publishing post: ${error.message}`);
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		chatService.errorLine(`[Ghost.io] Error publishing post: ${errorMessage}`);
 		return {
 			success: false,
-			error: `Failed to publish post: ${error.message}`,
+			error: `Failed to publish post: ${errorMessage}`,
 			suggestion: "Check your Ghost.io API credentials and try again.",
 		};
 	}

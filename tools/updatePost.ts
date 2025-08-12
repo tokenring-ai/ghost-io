@@ -1,19 +1,44 @@
-// @ts-nocheck
+
 import ChatService from "@token-ring/chat/ChatService";
 import { z } from "zod";
 import GhostIOService from "../GhostIOService.ts";
+import { Registry } from "@token-ring/registry";
+
+interface UpdatePostParams {
+    title?: string;
+    content?: string;
+    tags?: string[];
+}
+
+interface GhostPost {
+    id: string;
+    title: string;
+    [key: string]: any;
+}
+
+interface UpdatePostSuccess {
+    success: true;
+    post: GhostPost;
+    message: string;
+    changes: {
+        title: boolean;
+        content: boolean;
+        tags: boolean;
+    };
+}
+
+interface UpdatePostError {
+    success: false;
+    error: string;
+    suggestion: string;
+}
+
+type UpdatePostResult = UpdatePostSuccess | UpdatePostError;
 
 /**
  * Updates an existing post on the Ghost.io platform
- *
- * @param {Object} params - Parameters for updating a post
- * @param {string} [params.title] - The new title of the post
- * @param {string} [params.content] - The new content of the post (HTML)
- * @param {string[]} [params.tags] - New tags for the post
- * @param {TokenRingRegistry} registry - The package registry
- * @returns {Promise<Object>} - A promise that resolves to the updated post
  */
-export async function execute({ title, content, tags }, registry) {
+export async function execute({ title, content, tags }: UpdatePostParams, registry: Registry): Promise<UpdatePostResult> {
 	const chatService = registry.requireFirstServiceByType(ChatService);
 	const ghostService = registry.requireFirstServiceByType(GhostIOService);
 
@@ -69,10 +94,11 @@ export async function execute({ title, content, tags }, registry) {
 			};
 		}
 	} catch (error) {
-		chatService.errorLine(`[Ghost.io] Error updating post: ${error.message}`);
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		chatService.errorLine(`[Ghost.io] Error updating post: ${errorMessage}`);
 		return {
 			success: false,
-			error: `Failed to update post: ${error.message}`,
+			error: `Failed to update post: ${errorMessage}`,
 			suggestion: "Check your Ghost.io API credentials and try again.",
 		};
 	}

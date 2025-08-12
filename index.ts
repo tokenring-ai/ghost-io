@@ -1,8 +1,8 @@
+import packageJSON from './package.json' with { type: 'json' };
+export const name = packageJSON.name;
+export const version = packageJSON.version;
+export const description = packageJSON.description;
+
 export * as chatCommands from "./chatCommands.ts";
 export { default as GhostIOService } from "./GhostIOService.ts";
 export * as tools from "./tools.ts";
-
-export const name: string = "@token-ring/ghost-io";
-export const description: string =
-	"Service that provides integration with the Ghost.io blogging platform.";
-export const version: string = "0.1.0";

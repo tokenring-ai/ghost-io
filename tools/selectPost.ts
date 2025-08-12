@@ -1,17 +1,45 @@
-// @ts-nocheck
+
 import ChatService from "@token-ring/chat/ChatService";
 import { z } from "zod";
 import GhostIOService from "../GhostIOService.ts";
+import { Registry } from "@token-ring/registry";
+
+interface SelectPostParams {
+    id?: string | null;
+}
+
+interface GhostPost {
+    id: string;
+    title: string;
+    status: string;
+    [key: string]: any;
+}
+
+interface SelectPostSuccessWithPost {
+    success: true;
+    post: GhostPost;
+    message: string;
+    status: string;
+}
+
+interface SelectPostSuccessNone {
+    success: true;
+    message: string;
+    previouslySelected: string | null;
+}
+
+interface SelectPostError {
+    success: false;
+    error: string;
+    suggestion: string;
+}
+
+type SelectPostResult = SelectPostSuccessWithPost | SelectPostSuccessNone | SelectPostError;
 
 /**
  * Selects a post for subsequent operations or clears the current selection
- *
- * @param {Object} params - Parameters for selecting a post
- * @param {string|null} [params.id] - The ID of the post to select (if null, clears the selection)
- * @param {TokenRingRegistry} registry - The package registry
- * @returns {Promise<Object>} - A promise that resolves to an object containing the selected post
  */
-export async function execute({ id = null }, registry) {
+export async function execute({ id = null }: SelectPostParams, registry: Registry): Promise<SelectPostResult> {
 	const chatService = registry.requireFirstServiceByType(ChatService);
 	const ghostService = registry.requireFirstServiceByType(GhostIOService);
 
@@ -51,10 +79,11 @@ export async function execute({ id = null }, registry) {
 			};
 		}
 	} catch (error) {
-		chatService.errorLine(`[Ghost.io] Error selecting post: ${error.message}`);
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		chatService.errorLine(`[Ghost.io] Error selecting post: ${errorMessage}`);
 		return {
 			success: false,
-			error: `Failed to select post: ${error.message}`,
+			error: `Failed to select post: ${errorMessage}`,
 			suggestion: "Check the post ID and try again",
 		};
 	}
