@@ -1,5 +1,6 @@
 Content API JavaScript Client
-Ghost provides a flexible promise-based JavaScript library for accessing the Content API. The library can be used in any JavaScript project, client or server side and abstracts away all the pain points of working with API data.
+Ghost provides a flexible promise-based JavaScript library for accessing the Content API. The library can be used in any
+JavaScript project, client or server side and abstracts away all the pain points of working with API data.
 
 Working Example
 const api = new GhostContentAPI({
@@ -24,7 +25,8 @@ The client requires the host address of your Ghost API and a Content API key in 
 
 The version string is optional, and indicates the minimum version of Ghost your integration can work with.
 
-The Content API URL and key can be obtained by creating a new Custom Integration under the Integrations screen in Ghost Admin.
+The Content API URL and key can be obtained by creating a new Custom Integration under the Integrations screen in Ghost
+Admin.
 
 Get a Ghost Content API key
 url - API domain, must not end in a trailing slash.
@@ -74,7 +76,9 @@ api.pages.read({slug: 'something'}, {fields: ['title']});
 // Browsing settings returns Promise(Settings...)
 // The resolved object has each setting as a key value pair
 api.settings.browse();
-For all resources except settings, the browse() method will return an array of objects, and the read() method will return a single object. The settings.browse() endpoint always returns a single object with all the available key-value pairs.
+For all resources except settings, the browse() method will return an array of objects, and the read() method will
+return a single object. The settings.browse() endpoint always returns a single object with all the available key-value
+pairs.
 
 See the documentation on Content API resources for a full description of the response for each resource.
 
@@ -105,14 +109,17 @@ In the browser:
 Get the latest version from unpkg.com.
 
 Filtering
-Ghost provides the filter parameter to fetch your content with endless possibilities! Especially useful for retrieving posts according to their tags, authors or other properties.
+Ghost provides the filter parameter to fetch your content with endless possibilities! Especially useful for retrieving
+posts according to their tags, authors or other properties.
 
-Ghost uses the NQL query language to create filters in a simple yet powerful string format. See the NQL Syntax Reference for full details.
+Ghost uses the NQL query language to create filters in a simple yet powerful string format. See the NQL Syntax Reference
+for full details.
 
 Filters are provided to client libraries via the filter property of any browse method.
 
 api.posts.browse({filter: 'featured:true'});
-Incorrectly formatted filters will result in a 400 Bad Request Error. Filters that don’t match any data will return an empty array.
+Incorrectly formatted filters will result in a 400 Bad Request Error. Filters that don’t match any data will return an
+empty array.
 
 Working Example
 const api = new GhostContentAPI({
@@ -136,20 +143,26 @@ console.error(err);
 Common Filters
 featured:true - all resources with a field featured that is set to true.
 featured:true+feature_image:null - looks for featured posts which don’t have a feature image set by using + (and).
-tag:hash-noimg - tag is an alias for tags.slug and hash-noimg would be the slug for an internal tag called #NoImg. This filter would allow us to find any post that has this internal tag.
-tags:[photo, video, audio] - filters posts which have any one of the listed tags, [] (grouping) is more efficient than using or when querying the same field.
-primary_author:my-author - primary_author is an alias for the first author, allowing for filtering based on the first author.
-published_at:>'2017-06-03 23:43:12' - looks for posts published after a date, using a date string wrapped in single quotes and the > operator
+tag:hash-noimg - tag is an alias for tags.slug and hash-noimg would be the slug for an internal tag called #NoImg. This
+filter would allow us to find any post that has this internal tag.
+tags:[photo, video, audio] - filters posts which have any one of the listed tags, [] (grouping) is more efficient than
+using or when querying the same field.
+primary_author:my-author - primary_author is an alias for the first author, allowing for filtering based on the first
+author.
+published_at:>'2017-06-03 23:43:12' - looks for posts published after a date, using a date string wrapped in single
+quotes and the > operator
 JavaScript SDK
 A collection of packages for common API usecases
 
 Helpers
 Package: @tryghost/helpers
 Builds: CJS, ES, UMD
-The shared helpers are designed for performing data formatting tasks, usually when creating custom frontends. These are the underlying tools that power our handlebars and gatsby helpers.
+The shared helpers are designed for performing data formatting tasks, usually when creating custom frontends. These are
+the underlying tools that power our handlebars and gatsby helpers.
 
 Tags
-Filters and outputs tags. By default, the helper will output a comma separated list of tag names, excluding any internal tags.
+Filters and outputs tags. By default, the helper will output a comma separated list of tag names, excluding any internal
+tags.
 
 import {tags} from '@tryghost/helpers'
 
@@ -160,7 +173,8 @@ tags(post, {prefix: 'Posted in: ', suffix: '.'});
 The first argument must be a post object, or any object that has a tags array.
 
 Options
-The tag helper supports multiple options so that you can control exactly what is output, without having to write any logic.
+The tag helper supports multiple options so that you can control exactly what is output, without having to write any
+logic.
 
 limit {integer} - limits the number of tags to be returned
 from {integer, default:1} - index of the tag to start iterating from
@@ -180,7 +194,8 @@ import {readingTime} from '@tryghost/helpers'
 posts.forEach((post) => {
 readingTime(post, {minute: 'A 1 minute read.', minutes: 'A % minute read.'});
 });
-The first argument must be a post object, or any object that has an html string. If a feature_image is present, this is taken into account.
+The first argument must be a post object, or any object that has an html string. If a feature_image is present, this is
+taken into account.
 
 Options
 The output of the reading time helper can be customised through format strings.

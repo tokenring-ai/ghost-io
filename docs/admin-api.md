@@ -2,26 +2,36 @@ Docs
 /
 Admin API
 Admin API
-It’s possible to create and manage your content using the Ghost Admin API. Our content management interface, Ghost Admin, uses the admin API - which means that everything Ghost Admin can do is also possible with the API, and a whole lot more!
+It’s possible to create and manage your content using the Ghost Admin API. Our content management interface, Ghost
+Admin, uses the admin API - which means that everything Ghost Admin can do is also possible with the API, and a whole
+lot more!
 
-Secure authentication is available either as a user with role-based permissions, or as an integration with a single standard set of permissions designed to support common publishing workflows.
+Secure authentication is available either as a user with role-based permissions, or as an integration with a single
+standard set of permissions designed to support common publishing workflows.
 
-The API is RESTful with predictable resource URLs, standard HTTP verbs, response codes and authentication used throughout. Requests and responses are JSON-encoded with consistent patterns and inline relations and responses are customisable using powerful query parameters.
+The API is RESTful with predictable resource URLs, standard HTTP verbs, response codes and authentication used
+throughout. Requests and responses are JSON-encoded with consistent patterns and inline relations and responses are
+customisable using powerful query parameters.
 
 API Clients
 JavaScript Client Library
-We’ve developed an API client for JavaScript, that simplifies authenticating with the admin API, and makes reading and writing data a breeze. The client is designed for use with integrations, supporting token authentication and the endpoints available to integrations.
+We’ve developed an API client for JavaScript, that simplifies authenticating with the admin API, and makes reading and
+writing data a breeze. The client is designed for use with integrations, supporting token authentication and the
+endpoints available to integrations.
 
 Structure
 Base URL
 https://{admin_domain}/ghost/api/admin/
 
-All admin API requests start with this base URL. Your admin domain can be different to your main domain, and may include a subdirectory. Using the correct domain and protocol are critical to getting consistent behaviour, particularly when dealing with CORS in the browser. All Ghost(Pro) blogs have a *.ghost.io domain as their admin domain and require https.
+All admin API requests start with this base URL. Your admin domain can be different to your main domain, and may include
+a subdirectory. Using the correct domain and protocol are critical to getting consistent behaviour, particularly when
+dealing with CORS in the browser. All Ghost(Pro) blogs have a *.ghost.io domain as their admin domain and require https.
 
 Accept-Version Header
 Accept-Version: v{major}.{minor}
 
-Use the Accept-Version header to indicate the minimum version of Ghost’s API to operate with. See API Versioning for more details.
+Use the Accept-Version header to indicate the minimum version of Ghost’s API to operate with. See API Versioning for
+more details.
 
 JSON Format
 The API uses a consistent JSON structure for all requests and responses:
@@ -32,15 +42,20 @@ The API uses a consistent JSON structure for all requests and responses:
 }],
 "meta": {}
 }
-resource_type: will always match the resource name in the URL. All resources are returned wrapped in an array, with the exception of /site/ and /settings/.
+resource_type: will always match the resource name in the URL. All resources are returned wrapped in an array, with the
+exception of /site/ and /settings/.
 meta: contains pagination information for browse requests.
 Composing requests
-When composing JSON payloads to send to the API as POST or PUT requests, you must always use this same format, unless the documentation for an endpoint says otherwise.
+When composing JSON payloads to send to the API as POST or PUT requests, you must always use this same format, unless
+the documentation for an endpoint says otherwise.
 
-Requests with JSON payloads require the Content-Type: application/json header. Most request libraries have JSON-specific handling that will do this for you.
+Requests with JSON payloads require the Content-Type: application/json header. Most request libraries have JSON-specific
+handling that will do this for you.
 
 Pagination
-All browse endpoints are paginated, returning 15 records by default. You can use the page and limit parameters to move through the pages of records. The response object contains a meta.pagination key with information on the current location within the records:
+All browse endpoints are paginated, returning 15 records by default. You can use the page and limit parameters to move
+through the pages of records. The response object contains a meta.pagination key with information on the current
+location within the records:
 
 "meta": {
 "pagination": {
@@ -53,9 +68,11 @@ All browse endpoints are paginated, returning 15 records by default. You can use
 }
 }
 Parameters
-Query parameters provide fine-grained control over responses. All endpoints accept include and fields. Browse endpoints additionally accept filter, limit, page and order. Some endpoints have their own specific parameters.
+Query parameters provide fine-grained control over responses. All endpoints accept include and fields. Browse endpoints
+additionally accept filter, limit, page and order. Some endpoints have their own specific parameters.
 
-The values provided as query parameters MUST be url encoded when used directly. The client library will handle this for you.
+The values provided as query parameters MUST be url encoded when used directly. The client library will handle this for
+you.
 
 For more details see the Content API.
 
@@ -66,46 +83,69 @@ Errors
 See the Content API.
 
 Authentication
-There are three methods for authenticating with the Admin API: integration token authentication, staff access token authentication and user authentication. Most applications integrating with the Ghost Admin API should use one of the token authentication methods.
+There are three methods for authenticating with the Admin API: integration token authentication, staff access token
+authentication and user authentication. Most applications integrating with the Ghost Admin API should use one of the
+token authentication methods.
 
 The JavaScript Admin API Client supports token authentication and staff access token authentication.
 
 Choosing an authentication method
-Integration Token authentication is intended for integrations that handle common workflows, such as publishing new content, or sharing content to other platforms.
+Integration Token authentication is intended for integrations that handle common workflows, such as publishing new
+content, or sharing content to other platforms.
 
-Using tokens, you authenticate as an integration. Each integration can have associated API keys & webhooks and are able to perform API requests independently of users. Admin API keys are used to generate short-lived single-use JSON Web Tokens (JWTs), which are then used to authenticate a request. The API Key is secret, and therefore this authentication method is only suitable for secure server side environments.
+Using tokens, you authenticate as an integration. Each integration can have associated API keys & webhooks and are able
+to perform API requests independently of users. Admin API keys are used to generate short-lived single-use JSON Web
+Tokens (JWTs), which are then used to authenticate a request. The API Key is secret, and therefore this authentication
+method is only suitable for secure server side environments.
 
-Staff access token authentication is intended for clients where different users login and manage various resources as themselves, without having to share their password.
+Staff access token authentication is intended for clients where different users login and manage various resources as
+themselves, without having to share their password.
 
-Using a token found in a user’s settings page you authenticate as a specific user with their role-based permissions. You can use this token the same way you would use an integration token.
+Using a token found in a user’s settings page you authenticate as a specific user with their role-based permissions. You
+can use this token the same way you would use an integration token.
 
-User authentication is intended for fully-fledged clients where different users login and manage various resources as themselves.
+User authentication is intended for fully-fledged clients where different users login and manage various resources as
+themselves.
 
-Using an email address and password, you authenticate as a specific user with their role-based permissions. Via the session API, credentials are swapped for a cookie-based session, which is then used to authenticate further API requests. Provided that passwords are entered securely, user-authentication is safe for use in the browser. User authentication requires support for second factor authentication codes.
+Using an email address and password, you authenticate as a specific user with their role-based permissions. Via the
+session API, credentials are swapped for a cookie-based session, which is then used to authenticate further API
+requests. Provided that passwords are entered securely, user-authentication is safe for use in the browser. User
+authentication requires support for second factor authentication codes.
 
 Permissions
-Integrations have a restricted set of fixed permissions allowing access to certain endpoints e.g. GET /users/ or POST /posts/. The full set of endpoints that integrations can access are those listed as endpoints on this page.
+Integrations have a restricted set of fixed permissions allowing access to certain endpoints e.g. GET /users/ or POST
+/posts/. The full set of endpoints that integrations can access are those listed as endpoints on this page.
 
-User permissions (whether using staff tokens or user authentication) are dependent entirely on their role. You can find more details in the team management guide. Authenticating as a user with the Owner or Admin role will give access to the full set of API endpoints. Many endpoints can be discovered by inspecting the requests made by Ghost Admin, the endpoints listed on this page are those stable enough to document.
+User permissions (whether using staff tokens or user authentication) are dependent entirely on their role. You can find
+more details in the team management guide. Authenticating as a user with the Owner or Admin role will give access to the
+full set of API endpoints. Many endpoints can be discovered by inspecting the requests made by Ghost Admin, the
+endpoints listed on this page are those stable enough to document.
 
 There are two exceptions: Staff tokens cannot transfer ownership or delete all content.
 
 Token Authentication
-Token authentication is a simple, secure authentication mechanism using JSON Web Tokens (JWTs). Each integration and staff user is issued with an admin API key, which is used to generate a JWT token and then provided to the API via the standard HTTP Authorization header.
+Token authentication is a simple, secure authentication mechanism using JSON Web Tokens (JWTs). Each integration and
+staff user is issued with an admin API key, which is used to generate a JWT token and then provided to the API via the
+standard HTTP Authorization header.
 
-The admin API key must be kept private, therefore token authentication is not suitable for browsers or other insecure environments, unlike the Content API key.
+The admin API key must be kept private, therefore token authentication is not suitable for browsers or other insecure
+environments, unlike the Content API key.
 
 Key
-Admin API keys can be obtained by creating a new Custom Integration under the Integrations screen in Ghost Admin. Keys for individual users can be found on their respective profile page.
+Admin API keys can be obtained by creating a new Custom Integration under the Integrations screen in Ghost Admin. Keys
+for individual users can be found on their respective profile page.
 
 Get a Ghost Admin API key
-Admin API keys are made up of an id and secret, separated by a colon. These values are used separately to get a signed JWT token, which is used in the Authorization header of the request:
+Admin API keys are made up of an id and secret, separated by a colon. These values are used separately to get a signed
+JWT token, which is used in the Authorization header of the request:
 
 curl -H "Authorization: Ghost $token" -H "Accept-Version: $version" https://{admin_domain}/ghost/api/admin/{resource}/
-The Admin API JavaScript client handles all the technical details of generating a JWT from an admin API key, meaning you only have to provide your url, version and key to start making requests.
+The Admin API JavaScript client handles all the technical details of generating a JWT from an admin API key, meaning you
+only have to provide your url, version and key to start making requests.
 
 Token Generation
-If you’re using a language other than JavaScript, or are not using our client library, you’ll need to generate the tokens yourself. It is not safe to swap keys for tokens in the browser, or in any other insecure environment.
+If you’re using a language other than JavaScript, or are not using our client library, you’ll need to generate the
+tokens yourself. It is not safe to swap keys for tokens in the browser, or in any other insecure environment.
 
 There are a myriad of libraries available for generating JWTs in different environments.
 
@@ -125,7 +165,9 @@ JSON Web Tokens are made up of a header, a payload and a secret. The values need
 "iat": {timestamp}, // 'now' (max 5 minutes after 'exp')
 "aud": "/admin/"
 }
-The libraries on https://jwt.io all work slightly differently, but all of them allow you to specify the above required values, including setting the signing algorithm to the required HS-256. Where possible, the API will provide specific error messages when required values are missing or incorrect.
+The libraries on https://jwt.io all work slightly differently, but all of them allow you to specify the above required
+values, including setting the signing algorithm to the required HS-256. Where possible, the API will provide specific
+error messages when required values are missing or incorrect.
 
 Regardless of language, you’ll need to:
 
@@ -133,8 +175,8 @@ Split the API key by the : into an id and a secret
 Decode the hexadecimal secret into the original binary byte array
 Pass these values to your JWT library of choice, ensuring that the header and payload are correct.
 Token Generation Examples
-These examples show how to generate a valid JWT in various languages & JWT libraries. The bash example shows step-by-step how to create a token without using a library.
-
+These examples show how to generate a valid JWT in various languages & JWT libraries. The bash example shows
+step-by-step how to create a token without using a library.
 
 Bash (cURL)
 1
@@ -182,40 +224,50 @@ Bash (cURL)
 #!/usr/bin/env bash
 
 # Admin API key goes here
+
 KEY="YOUR_ADMIN_API_KEY"
 
 # Split the key into ID and SECRET
+
 TMPIFS=$IFS
 IFS=':' read ID SECRET <<< "$KEY"
 IFS=$TMPIFS
 
 # Prepare header and payload
+
 NOW=$(date +'%s')
 FIVE_MINS=$(($NOW + 300))
 HEADER="{\"alg\": \"HS256\",\"typ\": \"JWT\", \"kid\": \"$ID\"}"
 PAYLOAD="{\"iat\":$NOW,\"exp\":$FIVE_MINS,\"aud\": \"/admin/\"}"
 
 # Helper function for performing base64 URL encoding
+
 base64_url_encode() {
 declare input=${1:-$(</dev/stdin)}
+
 # Use `tr` to URL encode the output from base64.
+
 printf '%s' "${input}" | base64 | tr -d '=' | tr '+' '-' | tr '/' '_'
 }
 
 # Prepare the token body
+
 header_base64=$(base64_url_encode "$HEADER")
 payload_base64=$(base64_url_encode "$PAYLOAD")
 
 header_payload="${header_base64}.${payload_base64}"
 
 # Create the signature
-signature=$(printf '%s' "${header_payload}" | openssl dgst -binary -sha256 -mac HMAC -macopt hexkey:$SECRET | base64_url_encode)
+
+signature=$(printf '%s' "${header_payload}" | openssl dgst -binary -sha256 -mac HMAC -macopt hexkey:$SECRET |
+base64_url_encode)
 
 # Concat payload and signature into a valid JWT token
 
 TOKEN="${header_payload}.${signature}"
 
 # Make an authenticated request to create a post
+
 curl -H "Authorization: Ghost $TOKEN" \
 -H "Content-Type: application/json" \
 -H "Accept-Version: v3.0" \
@@ -230,16 +282,23 @@ Ruby
 
 Python
 Staff access token authentication
-Staff access token authentication is a simple, secure authentication mechanism using JSON Web Tokens (JWTs) to authenticate as a user. Each user can create and refresh their own token, which is used to generate a JWT token and then provided to the API via the standard HTTP Authorization header. For more information on usage, please refer to the token authentication section.
+Staff access token authentication is a simple, secure authentication mechanism using JSON Web Tokens (JWTs) to
+authenticate as a user. Each user can create and refresh their own token, which is used to generate a JWT token and then
+provided to the API via the standard HTTP Authorization header. For more information on usage, please refer to the token
+authentication section.
 
-The staff access token must be kept private, therefore staff access token authentication is not suitable for browsers or other insecure environments.
+The staff access token must be kept private, therefore staff access token authentication is not suitable for browsers or
+other insecure environments.
 
 User Authentication
-User Authentication is an advanced, session-based authentication method that should only be used for applications where the user is present and able to provide their credentials.
+User Authentication is an advanced, session-based authentication method that should only be used for applications where
+the user is present and able to provide their credentials.
 
-Authenticating as a user requires an application to collect a user’s email and password. These credentials are then swapped for a cookie, and the cookie is then used to maintain a session.
+Authenticating as a user requires an application to collect a user’s email and password. These credentials are then
+swapped for a cookie, and the cookie is then used to maintain a session.
 
-Requests to create a session may require new device verification or two-factor auth. In this case an auth code is sent to the user’s email address, and that must be provided in order to verify the session.
+Requests to create a session may require new device verification or two-factor auth. In this case an auth code is sent
+to the user’s email address, and that must be provided in order to verify the session.
 
 Creating a Session
 The session and authentication endpoints have custom payloads, different to the standard JSON resource format.
@@ -256,13 +315,17 @@ To create a new session, send a username and password to the sessions endpoint, 
 This request should also have an Origin header. See CSRF protection for details.
 
 Success Response
-201 Created: A successful session creation will return HTTP 201 response with an empty body and a set-cookie header, in the following format:
+201 Created: A successful session creation will return HTTP 201 response with an empty body and a set-cookie header, in
+the following format:
 
-set-cookie: ghost-admin-api-session={session token}; Path=/ghost; Expires=Mon, 26 Aug 2019 19:14:07 GMT; HttpOnly; SameSite=Lax
+set-cookie: ghost-admin-api-session={session token}; Path=/ghost; Expires=Mon, 26 Aug 2019 19:14:07 GMT; HttpOnly;
+SameSite=Lax
 2FA Response
-403 Needs2FAError: In many cases, session creation will require an auth code to be provided. In this case you’ll get a 403 and the message User must verify session to login.
+403 Needs2FAError: In many cases, session creation will require an auth code to be provided. In this case you’ll get a
+403 and the message User must verify session to login.
 
-This response still has the set-cookie header in the above format, which should be used in the request to provide the token:
+This response still has the set-cookie header in the above format, which should be used in the request to provide the
+token:
 
 Verification Request
 To send the authentication token
@@ -282,18 +345,24 @@ When making the request from a browser using the fetch API, pass credentials: 'i
 When using XHR you should set the withCredentials property of the xhr to true
 When using cURL you can use the --cookie and --cookie-jar options to store and send cookies from a text file.
 CSRF Protection
-Session-based requests must also include either an Origin (preferred) or a Referer header. The value of these headers is checked against the original session creation requests, in order to prevent Cross-Site Request Forgery (CSRF) in a browser environment. In a browser environment, these headers are handled automatically. For server-side or native apps, the Origin header should be sent with an identifying URL as the value.
+Session-based requests must also include either an Origin (preferred) or a Referer header. The value of these headers is
+checked against the original session creation requests, in order to prevent Cross-Site Request Forgery (CSRF) in a
+browser environment. In a browser environment, these headers are handled automatically. For server-side or native apps,
+the Origin header should be sent with an identifying URL as the value.
 
 Session-based Examples
+
 # cURL
 
 # Create a session, and store the cookie in ghost-cookie.txt
+
 curl -c ghost-cookie.txt -d username=me@site.com -d password=secretpassword \
 -H "Origin: https://myappsite.com" \
 -H "Accept-Version: v3.0" \
 https://demo.ghost.io/ghost/api/admin/session/
 
 # Use the session cookie to create a post
+
 curl -b ghost-cookie.txt \
 -d '{"posts": [{"title": "Hello World"}]}' \
 -H "Content-Type: application/json" \
@@ -301,25 +370,27 @@ curl -b ghost-cookie.txt \
 -H "Origin: https://myappsite.com" \
 https://demo.ghost.io/ghost/api/admin/posts/
 Endpoints
-These are the endpoints & methods currently available to integrations. More endpoints are available through user authentication. Each endpoint has a stability index, see versioning for more information.
+These are the endpoints & methods currently available to integrations. More endpoints are available through user
+authentication. Each endpoint has a stability index, see versioning for more information.
 
-Resource	Methods	Stability
-/posts/	Browse, Read, Edit, Add, Copy, Delete	Stable
-/pages/	Browse, Read, Edit, Add, Copy, Delete	Stable
-/tags/	Browse, Read, Edit, Add, Delete	Stable
-/tiers/	Browse, Read, Edit, Add	Stable
-/newsletters/	Browse, Read, Edit, Add	Stable
-/offers/	Browse, Read, Edit, Add	Stable
-/members/	Browse, Read, Edit, Add	Stable
-/users/	Browse, Read	Stable
-/images/	Upload	Stable
-/themes/	Upload, Activate	Stable
-/site/	Read	Stable
-/webhooks/	Edit, Add, Delete	Stable
+Resource Methods Stability
+/posts/ Browse, Read, Edit, Add, Copy, Delete Stable
+/pages/ Browse, Read, Edit, Add, Copy, Delete Stable
+/tags/ Browse, Read, Edit, Add, Delete Stable
+/tiers/ Browse, Read, Edit, Add Stable
+/newsletters/ Browse, Read, Edit, Add Stable
+/offers/ Browse, Read, Edit, Add Stable
+/members/ Browse, Read, Edit, Add Stable
+/users/ Browse, Read Stable
+/images/ Upload Stable
+/themes/ Upload, Activate Stable
+/site/ Read Stable
+/webhooks/ Edit, Add, Delete Stable
 Posts
 Posts are the primary resource in a Ghost site, providing means for publishing, managing and displaying content.
 
-At the heart of every post is a Lexical field, containing a standardised JSON-based representation of your content, which can be rendered in multiple formats.
+At the heart of every post is a Lexical field, containing a standardised JSON-based representation of your content,
+which can be rendered in multiple formats.
 
 GET /admin/posts/
 GET /admin/posts/{id}/
@@ -328,9 +399,11 @@ POST /admin/posts/
 PUT /admin/posts/{id}/
 DELETE /admin/posts/{id}/
 The post object
-Whenever you fetch, create, or edit a post, the API will respond with an array of one or more post objects. These objects will include all related tags, authors, and author roles.
+Whenever you fetch, create, or edit a post, the API will respond with an array of one or more post objects. These
+objects will include all related tags, authors, and author roles.
 
-By default, the API expects and returns content in the Lexical format only. To include HTML in the response use the formats parameter:
+By default, the API expects and returns content in the Lexical format only. To include HTML in the response use the
+formats parameter:
 
 // GET /admin/posts/?formats=html,lexical
 {
@@ -340,7 +413,10 @@ By default, the API expects and returns content in the Lexical format only. To i
 "id": "5ddc9141c35e7700383b2937",
 "uuid": "a5aa9bd8-ea31-415c-b452-3040dae1e730",
 "title": "Welcome",
-"lexical": "{\"root\":{\"children\":[{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Hello, beautiful world! 👋\",\"type\":\"extended-text\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"paragraph\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"root\",\"version\":1}}",
+"lexical": "{\"root\":{\"children\":[
+{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Hello, beautiful world! 👋\",\"type\":\"extended-text\",\"version\":1}]
+,\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"paragraph\",\"version\":1}],\"direction\":
+\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"root\",\"version\":1}}",
 "html": "<p>Hello, beautiful world! 👋</p>",
 "comment_id": "5ddc9141c35e7700383b2937",
 "feature_image": "https://static.ghost.org/v3.0.0/images/welcome-to-ghost.png",
@@ -522,30 +598,39 @@ By default, the API expects and returns content in the Lexical format only. To i
 ]
 }
 Parameters
-When retrieving posts from the admin API, it is possible to use the include, formats, filter, limit, page and order parameters as documented for the Content API.
+When retrieving posts from the admin API, it is possible to use the include, formats, filter, limit, page and order
+parameters as documented for the Content API.
 
-Some defaults are different between the two APIs, however the behaviour and availability of the parameters remains the same.
+Some defaults are different between the two APIs, however the behaviour and availability of the parameters remains the
+same.
 
 Creating a Post
 POST /admin/posts/
 Required fields: title
 
-Create draft and published posts with the add posts endpoint. All fields except title can be empty or have a default that is applied automatically. Below is a minimal example for creating a published post with content:
+Create draft and published posts with the add posts endpoint. All fields except title can be empty or have a default
+that is applied automatically. Below is a minimal example for creating a published post with content:
 
 // POST /admin/posts/
 {
 "posts": [
 {
 "title": "My test post",
-"lexical": "{\"root\":{\"children\":[{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Hello, beautiful world! 👋\",\"type\":\"extended-text\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"paragraph\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"root\",\"version\":1}}",
+"lexical": "{\"root\":{\"children\":[
+{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Hello, beautiful world! 👋\",\"type\":\"extended-text\",\"version\":1}]
+,\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"paragraph\",\"version\":1}],\"direction\":
+\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"root\",\"version\":1}}",
 "status": "published"
 }
 ]
 }
-A post must always have at least one author, and this will default to the staff user with the owner role when token authentication is used.
+A post must always have at least one author, and this will default to the staff user with the owner role when token
+authentication is used.
 
 Source HTML
-The post creation endpoint is also able to convert HTML into Lexical. The conversion generates the best available Lexical representation, meaning this operation is lossy and the HTML rendered by Ghost may be different from the source HTML. For the best results ensure your HTML is well-formed, e.g. uses block and inline elements correctly.
+The post creation endpoint is also able to convert HTML into Lexical. The conversion generates the best available
+Lexical representation, meaning this operation is lossy and the HTML rendered by Ghost may be different from the source
+HTML. For the best results ensure your HTML is well-formed, e.g. uses block and inline elements correctly.
 
 To use HTML as the source for your content instead of Lexical, use the source parameter:
 
@@ -567,7 +652,8 @@ For lossless HTML conversion, you can wrap your HTML in a single Lexical card:
 Tags and Authors
 You can link tags and authors to any post you create in the same request body, using either short or long form to identify linked resources.
 
-Short form uses a single string to identify a tag or author resource. Tags are identified by name and authors are identified by email address:
+Short form uses a single string to identify a tag or author resource. Tags are identified by name and authors are
+identified by email address:
 
 // POST /admin/posts/
 {
@@ -576,7 +662,10 @@ Short form uses a single string to identify a tag or author resource. Tags are i
 "title": "My test post",
 "tags": ["Getting Started", "Tag Example"],
 "authors": ["example@ghost.org", "test@ghost.org"],
-"lexical": "{\"root\":{\"children\":[{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Hello, beautiful world! 👋\",\"type\":\"extended-text\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"paragraph\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"root\",\"version\":1}}",
+"lexical": "{\"root\":{\"children\":[
+{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Hello, beautiful world! 👋\",\"type\":\"extended-text\",\"version\":1}]
+,\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"paragraph\",\"version\":1}],\"direction\":
+\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"root\",\"version\":1}}",
 "status": "published"
 }
 ]
@@ -600,13 +689,15 @@ Long form requires an object with at least one identifying key-value pair:
 }
 ]
 }
-Tags that cannot be matched are automatically created. If no author can be matched, Ghost will fallback to using the staff user with the owner role.
+Tags that cannot be matched are automatically created. If no author can be matched, Ghost will fallback to using the
+staff user with the owner role.
 
 Copying a Post
 POST /admin/posts/{id}/copy
 Required fields: id
 
-Duplicates an existing post, appending “Copy” to the title and slug. The API returns the duplicated post, which is created as a draft:
+Duplicates an existing post, appending “Copy” to the title and slug. The API returns the duplicated post, which is
+created as a draft:
 
 {
 "posts": [
@@ -622,7 +713,9 @@ Updating a Post
 PUT /admin/posts/{id}/
 Required fields: updated_at
 
-All writable fields of a post can be updated via the edit endpoint. The updated_at field is required as it is used to handle collision detection and ensure you’re not overwriting more recent updates. It is recommended to perform a GET request to fetch the latest data before updating a post. Below is a minimal example for updating the title of a post:
+All writable fields of a post can be updated via the edit endpoint. The updated_at field is required as it is used to
+handle collision detection and ensure you’re not overwriting more recent updates. It is recommended to perform a GET
+request to fetch the latest data before updating a post. Below is a minimal example for updating the title of a post:
 
 // PUT admin/posts/5b7ada404f87d200b5b1f9c8/
 {
@@ -634,7 +727,9 @@ All writable fields of a post can be updated via the edit endpoint. The updated_
 ]
 }
 Tags and Authors
-Tag and author relations will be replaced, not merged. Again, the recommendation is to always fetch the latest version of a post, make any amends to this such as adding another tag to the tags array, and then send the amended data via the edit endpoint.
+Tag and author relations will be replaced, not merged. Again, the recommendation is to always fetch the latest version
+of a post, make any amends to this such as adding another tag to the tags array, and then send the amended data via the
+edit endpoint.
 
 Publishing and scheduling posts
 Posts can be published or scheduled by updating the status.
@@ -652,7 +747,8 @@ Publish a draft post by updating its status to published:
 ]
 }
 Scheduling a Post
-A post can be scheduled by updating or setting the status to scheduled and setting published_at to a datetime in the future:
+A post can be scheduled by updating or setting the status to scheduled and setting published_at to a datetime in the
+future:
 
 // PUT admin/posts/5b7ada404f87d200b5b1f9c8/
 {
@@ -664,12 +760,17 @@ A post can be scheduled by updating or setting the status to scheduled and setti
 }
 ]
 }
-At the time specified in published_at, the post will be published, email newsletters will be sent (if applicable), and the status of the post will change to published. For email-only posts, the status will change to sent.
+At the time specified in published_at, the post will be published, email newsletters will be sent (if applicable), and
+the status of the post will change to published. For email-only posts, the status will change to sent.
 
 Sending a Post via email
-To send a post by email, the newsletter query parameter must be passed when publishing or scheduling the post, containing the newsletter’s slug.
+To send a post by email, the newsletter query parameter must be passed when publishing or scheduling the post,
+containing the newsletter’s slug.
 
-Optionally, a filter can be provided to send the email to a subset of members subscribed to the newsletter by passing the email_segment query parameter containing a valid NQL filter for members. Commonly used values are status:free (all free members), status:-free (all paid members) and all. If email_segment is not specified, the default is all (no additional filtering applied).
+Optionally, a filter can be provided to send the email to a subset of members subscribed to the newsletter by passing
+the email_segment query parameter containing a valid NQL filter for members. Commonly used values are status:free (all
+free members), status:-free (all paid members) and all. If email_segment is not specified, the default is all (no
+additional filtering applied).
 
 Posts are sent by email if and only if an active newsletter is provided.
 
@@ -682,7 +783,9 @@ Posts are sent by email if and only if an active newsletter is provided.
 }
 ]
 }
-When a post has been sent by email, the post object will contain the related newsletter and email objects. If the related email object has a status of failed, sending can be retried by reverting the post’s status to draft and then republishing the post.
+When a post has been sent by email, the post object will contain the related newsletter and email objects. If the
+related email object has a status of failed, sending can be retried by reverting the post’s status to draft and then
+republishing the post.
 
 {
 "posts": [
@@ -715,7 +818,8 @@ When a post has been sent by email, the post object will contain the related new
 ]
 }
 Email only posts
-To send a post as an email without publishing it on the site, the email_only property must be set to true when publishing or scheduling the post in combination with the newsletter parameter:
+To send a post as an email without publishing it on the site, the email_only property must be set to true when
+publishing or scheduling the post in combination with the newsletter parameter:
 
 // PUT admin/posts/5b7ada404f87d200b5b1f9c8/?newsletter=weekly-newsletter
 {
@@ -734,7 +838,8 @@ DELETE /admin/posts/{id}/
 Delete requests have no payload in the request or response. Successful deletes will return an empty 204 response.
 
 Pages
-Pages are static resources that are not included in channels or collections on the Ghost front-end. They are identical to posts in terms of request and response structure when working with the APIs.
+Pages are static resources that are not included in channels or collections on the Ghost front-end. They are identical
+to posts in terms of request and response structure when working with the APIs.
 
 GET /admin/pages/
 GET /admin/pages/{id}/
@@ -744,12 +849,14 @@ POST /admin/pages/{id}/copy
 PUT /admin/pages/{id}/
 DELETE /admin/pages/{id}/
 Tiers
-Tiers allow publishers to create multiple options for an audience to become paid subscribers. Each tier can have its own price points, benefits, and content access levels. Ghost connects tiers directly to the publication’s Stripe account.
+Tiers allow publishers to create multiple options for an audience to become paid subscribers. Each tier can have its own
+price points, benefits, and content access levels. Ghost connects tiers directly to the publication’s Stripe account.
 
 The tier object
 Whenever you fetch, create, or edit a tier, the API responds with an array of one or more tier objects.
 
-By default, the API doesn’t return monthly/yearly prices or benefits. To include them in the response, use the include parameter with any or all of the following values: monthly_price, yearly_price, benefits.
+By default, the API doesn’t return monthly/yearly prices or benefits. To include them in the response, use the include
+parameter with any or all of the following values: monthly_price, yearly_price, benefits.
 
 // GET admin/tiers/?include=monthly_price,yearly_price,benefits
 {
@@ -825,7 +932,8 @@ Required fields: name
 
 Create public and hidden tiers by using this endpoint. New tiers are always set as active when created.
 
-The example below creates a paid Tier with all properties including custom monthly/yearly prices, description, benefits, and welcome page.
+The example below creates a paid Tier with all properties including custom monthly/yearly prices, description, benefits,
+and welcome page.
 
 // POST /admin/tiers/
 {
@@ -849,7 +957,8 @@ Updating a Tier
 PUT /admin/tiers/{id}/
 Required fields: name
 
-Update all writable fields of a tier by using the edit endpoint. For example, rename a tier or set it as archived with this endpoint.
+Update all writable fields of a tier by using the edit endpoint. For example, rename a tier or set it as archived with
+this endpoint.
 
 Below is an example for updating the name and description of a tier:
 
@@ -863,7 +972,8 @@ Below is an example for updating the name and description of a tier:
 ]
 }
 Newsletters
-Newsletters allow finer control over distribution of site content via email, allowing members to opt-in or opt-out of different categories of content. By default each site has one newsletter.
+Newsletters allow finer control over distribution of site content via email, allowing members to opt-in or opt-out of
+different categories of content. By default each site has one newsletter.
 
 The newsletter object
 // GET admin/newsletters/?limit=all
@@ -907,31 +1017,33 @@ The newsletter object
 }
 }
 }
-Key	Description
-name	Public name for the newsletter
-description	(nullable) Public description of the newsletter
-status	active or archived - denotes if the newsletter is active or archived
-slug	The reference to this newsletter that can be used in the newsletter option when sending a post via email
-sender_name	(nullable) The sender name of the emails
-sender_email	(nullable) The email from which to send emails. Requires validation.
-sender_reply_to	The reply-to email address for sent emails. Can be either newsletter (= use sender_email) or support (use support email from Portal settings).
-subscribe_on_signup	true/false. Whether members should automatically subscribe to this newsletter on signup
-header_image	(nullable) Path to an image to show at the top of emails. Recommended size 1200x600
-show_header_icon	true/false. Show the site icon in emails
-show_header_title	true/false. Show the site name in emails
-show_header_name	true/false. Show the newsletter name in emails
-title_font_category	Title font style. Either serif or sans_serif
-show_feature_image	true/false. Show the post's feature image in emails
-body_font_category	Body font style. Either serif or sans_serif
-footer_content	(nullable) Extra information or legal text to show in the footer of emails. Should contain valid HTML.
-show_badge	true/false. Show you’re a part of the indie publishing movement by adding a small Ghost badge in the footer
+Key Description
+name Public name for the newsletter
+description (nullable) Public description of the newsletter
+status active or archived - denotes if the newsletter is active or archived
+slug The reference to this newsletter that can be used in the newsletter option when sending a post via email
+sender_name (nullable) The sender name of the emails
+sender_email (nullable) The email from which to send emails. Requires validation.
+sender_reply_to The reply-to email address for sent emails. Can be either newsletter (= use sender_email) or support (
+use support email from Portal settings).
+subscribe_on_signup true/false. Whether members should automatically subscribe to this newsletter on signup
+header_image (nullable) Path to an image to show at the top of emails. Recommended size 1200x600
+show_header_icon true/false. Show the site icon in emails
+show_header_title true/false. Show the site name in emails
+show_header_name true/false. Show the newsletter name in emails
+title_font_category Title font style. Either serif or sans_serif
+show_feature_image true/false. Show the post's feature image in emails
+body_font_category Body font style. Either serif or sans_serif
+footer_content (nullable) Extra information or legal text to show in the footer of emails. Should contain valid HTML.
+show_badge true/false. Show you’re a part of the indie publishing movement by adding a small Ghost badge in the footer
 Creating a Newsletter
 POST /admin/newsletters/
 Required fields: name
 
 Options: opt_in_existing
 
-When opt_in_existing is set to true, existing members with a subscription to one or more active newsletters are also subscribed to this newsletter. The response metadata will include the number of members opted-in.
+When opt_in_existing is set to true, existing members with a subscription to one or more active newsletters are also
+subscribed to this newsletter. The response metadata will include the number of members opted-in.
 
 Below is an example for creating a newsletter with all available properties:
 
@@ -983,7 +1095,10 @@ PUT /admin/newsletters/629711f95d57e7229f16181c/
 ]
 }
 Sender email validation
-When updating the sender_email field, email verification is required before emails are sent from the new address. After updating the property, the sent_email_verification metadata property will be set, containing sender_email. The sender_email property will remain unchanged until the address has been verified by clicking the link that is sent to the address specified in sender_email.
+When updating the sender_email field, email verification is required before emails are sent from the new address. After
+updating the property, the sent_email_verification metadata property will be set, containing sender_email. The
+sender_email property will remain unchanged until the address has been verified by clicking the link that is sent to the
+address specified in sender_email.
 
 PUT /admin/newsletters/62750bff2b868a34f814af08/
 {
@@ -1029,7 +1144,8 @@ Offers
 Use offers to create a discount or special price for members signing up on a tier.
 
 The offer object
-When you fetch, create, or edit an offer, the API responds with an array of one or more offer objects. These objects include related tier data.
+When you fetch, create, or edit an offer, the API responds with an array of one or more offer objects. These objects
+include related tier data.
 
 // GET /admin/offers/
 {
@@ -1056,26 +1172,29 @@ When you fetch, create, or edit an offer, the API responds with an array of one 
 }
 ]
 }
-Key	Description
-display_title	Name displayed in the offer window
-display_description	Text displayed in the offer window
-name	Internal name for an offer, must be unique
-code	Shortcode for the offer, for example: https://yoursite.com/black-friday
-status	active or archived - denotes if the offer is active or archived
-type	percent or fixed - whether the amount off is a percentage or fixed
-amount	Offer discount amount, as a percentage or fixed value as set in type. Amount is always denoted by the smallest currency unit (e.g., 100 cents instead of $1.00 in USD)
-currency	fixed type offers only - specifies tier's currency as three letter ISO currency code
-currency_restriction	Denotes whether the offer `currency` is restricted. If so, changing the currency invalidates the offer
-duration	once/forever/repeating. repeating duration is only available when cadence is month
-duration_in_months	Number of months offer should be repeated when duration is repeating
-redemption_count	Number of times the offer has been redeemed
-tier	Tier on which offer is applied
-cadence	month or year - denotes if offer applies to tier's monthly or yearly price
+Key Description
+display_title Name displayed in the offer window
+display_description Text displayed in the offer window
+name Internal name for an offer, must be unique
+code Shortcode for the offer, for example: https://yoursite.com/black-friday
+status active or archived - denotes if the offer is active or archived
+type percent or fixed - whether the amount off is a percentage or fixed
+amount Offer discount amount, as a percentage or fixed value as set in type. Amount is always denoted by the smallest
+currency unit (e.g., 100 cents instead of $1.00 in USD)
+currency fixed type offers only - specifies tier's currency as three letter ISO currency code
+currency_restriction Denotes whether the offer `currency` is restricted. If so, changing the currency invalidates the
+offer
+duration once/forever/repeating. repeating duration is only available when cadence is month
+duration_in_months Number of months offer should be repeated when duration is repeating
+redemption_count Number of times the offer has been redeemed
+tier Tier on which offer is applied
+cadence month or year - denotes if offer applies to tier's monthly or yearly price
 Creating an Offer
 POST /admin/offers/
 Required fields: name, code, cadence, duration, amount, tier.id , type
 
-When offer type is fixed, currency is also required and must match the tier’s currency. New offers are created as active by default.
+When offer type is fixed, currency is also required and must match the tier’s currency. New offers are created as active
+by default.
 
 Below is an example for creating an offer with all properties including prices, description, and benefits:
 
@@ -1193,16 +1312,16 @@ A paid member includes a subscription object that provides subscription details.
 "offer": null
 }
 ]
-Key	Description
-customer	Stripe customer attached to the subscription
-start_date	Subscription start date
-default_payment_card_last4	Last 4 digits of the card
-cancel_at_period_end	If the subscription should be canceled or renewed at period end
-cancellation_reason	Reason for subscription cancellation
-current_period_end	Subscription end date
-price	Price information for subscription including Stripe price ID
-tier	Member subscription tier
-offer	Offer details for a subscription
+Key Description
+customer Stripe customer attached to the subscription
+start_date Subscription start date
+default_payment_card_last4 Last 4 digits of the card
+cancel_at_period_end If the subscription should be canceled or renewed at period end
+cancellation_reason Reason for subscription cancellation
+current_period_end Subscription end date
+price Price information for subscription including Stripe price ID
+tier Member subscription tier
+offer Offer details for a subscription
 Creating a member
 At minimum, an email is required to create a new, free member.
 
@@ -1242,11 +1361,11 @@ At minimum, an email is required to create a new, free member.
 }
 Additional writable member fields include:
 
-Key	Description
-name	member name
-note	notes on the member
-labels	member labels
-newsletters	List of newsletters subscribed to by this member
+Key Description
+name member name
+note notes on the member
+labels member labels
+newsletters List of newsletters subscribed to by this member
 Create a new, free member with name, newsletter, and label:
 
 // POST /admin/members/
@@ -1271,7 +1390,8 @@ Create a new, free member with name, newsletter, and label:
 }
 Updating a member
 PUT /admin/members/{id}/
-All writable fields of a member can be updated. It’s recommended to perform a GET request to fetch the latest data before updating a member.
+All writable fields of a member can be updated. It’s recommended to perform a GET request to fetch the latest data
+before updating a member.
 
 Below is a minimal example for updating the name of a member:
 
@@ -1332,7 +1452,8 @@ Fetch users (by default, the 15 newest staff users are returned):
 ...
 ]
 }
-Note that the Owner user does not have permissions assigned to it, or to the Owner role. This is because the Owner user has all permissions implicitly.
+Note that the Owner user does not have permissions assigned to it, or to the Owner role. This is because the Owner user
+has all permissions implicitly.
 
 Roles
 The roles resource provides an endpoint for fetching role data.
@@ -1351,7 +1472,9 @@ The roles resource provides an endpoint for fetching role data.
 ]
 }
 Invites
-The invites resource provides an endpoint for inviting staff users to the Ghost instance. To invite a user you must specify the ID of the role they should receive (fetch roles, detailed above, to find the role IDs for your site), and the email address that the invite link should be sent to.
+The invites resource provides an endpoint for inviting staff users to the Ghost instance. To invite a user you must
+specify the ID of the role they should receive (fetch roles, detailed above, to find the role IDs for your site), and
+the email address that the invite link should be sent to.
 
 Create a staff user invite:
 
@@ -1367,7 +1490,8 @@ Create a staff user invite:
 }
 Updating a user
 PUT /admin/users/{id}/
-All writable fields of a user can be updated. It’s recommended to perform a GET request to fetch the latest data before updating a user.
+All writable fields of a user can be updated. It’s recommended to perform a GET request to fetch the latest data before
+updating a user.
 
 Below is a minimal example for updating the name of a user:
 
@@ -1384,11 +1508,14 @@ DELETE /admin/users/{id}/
 This will delete the user. Note: You cannot delete the Owner user.
 
 Images
-Sending images to Ghost via the API allows you to upload images one at a time, and store them with a storage adapter. The default adapter stores files locally in /content/images/ without making any modifications, except for sanitising the filename.
+Sending images to Ghost via the API allows you to upload images one at a time, and store them with a storage adapter.
+The default adapter stores files locally in /content/images/ without making any modifications, except for sanitising the
+filename.
 
 POST /admin/images/upload/
 The image object
-Images can be uploaded to, and fetched from storage. When an image is uploaded, the response is an image object that contains the new URL for the image - the location from which the image can be fetched.
+Images can be uploaded to, and fetched from storage. When an image is uploaded, the response is an image object that
+contains the new URL for the image - the location from which the image can be fetched.
 
 url: URI The newly created URL for the image.
 
@@ -1405,22 +1532,28 @@ ref: String (optional) The reference for the image, if one was provided with the
 ]
 }
 Uploading an Image
-To upload an image, send a multipart formdata request by providing the 'Content-Type': 'multipart/form-data;' header, along with the following fields encoded as FormData:
+To upload an image, send a multipart formdata request by providing the 'Content-Type': 'multipart/form-data;' header,
+along with the following fields encoded as FormData:
 
 file: Blob or File The image data that you want to upload.
 
-purpose: String (default: image) Intended use for the image, changes the validations performed. Can be one of image , profile_image or icon. The supported formats for image, icon, and profile_image are WEBP, JPEG, GIF, PNG and SVG. profile_image must be square. icon must also be square, and additionally supports the ICO format.
+purpose: String (default: image) Intended use for the image, changes the validations performed. Can be one of image ,
+profile_image or icon. The supported formats for image, icon, and profile_image are WEBP, JPEG, GIF, PNG and SVG.
+profile_image must be square. icon must also be square, and additionally supports the ICO format.
 
-ref: String (optional) A reference or identifier for the image, e.g. the original filename and path. Will be returned as-is in the API response, making it useful for finding & replacing local image paths after uploads.
+ref: String (optional) A reference or identifier for the image, e.g. the original filename and path. Will be returned
+as-is in the API response, making it useful for finding & replacing local image paths after uploads.
 
-curl -X POST -F 'file=@/path/to/images/my-image.jpg' -F 'ref=path/to/images/my-image.jpg' -H "Authorization: 'Ghost $token'" -H "Accept-Version: $version" https://{admin_domain}/ghost/api/admin/images/upload/
+curl -X POST -F 'file=@/path/to/images/my-image.jpg' -F 'ref=path/to/images/my-image.jpg' -H "Authorization: '
+Ghost $token'" -H "Accept-Version: $version" https://{admin_domain}/ghost/api/admin/images/upload/
 Themes
 Themes can be uploaded from a local ZIP archive and activated.
 
 POST /admin/themes/upload;
 PUT /admin/themes/{ name }/activate;
 The theme object
-When a theme is uploaded or activated, the response is a themes array containing one theme object with metadata about the theme, as well as its status (active or not).
+When a theme is uploaded or activated, the response is a themes array containing one theme object with metadata about
+the theme, as well as its status (active or not).
 
 name: String The name of the theme. This is the value that is used to activate the theme.
 
@@ -1445,13 +1578,16 @@ slug: null
 }]
 }
 Uploading a theme
-To upload a theme ZIP archive, send a multipart formdata request by providing the 'Content-Type': 'multipart/form-data;' header, along with the following field encoded as FormData:
+To upload a theme ZIP archive, send a multipart formdata request by providing the 'Content-Type': 'multipart/form-data;'
+header, along with the following field encoded as FormData:
 
 file: Blob or File The theme archive that you want to upload.
 
-curl -X POST -F 'file=@/path/to/themes/my-theme.zip' -H "Authorization: Ghost $token" -H "Accept-Version: $version" https://{admin_domain}/ghost/api/admin/themes/upload
+curl -X POST -F 'file=@/path/to/themes/my-theme.zip' -H "Authorization: Ghost $token" -H "Accept-Version: $version"
+https://{admin_domain}/ghost/api/admin/themes/upload
 Site
-Site is a special unauthenticated, read-only endpoint for retrieving basic information about a site. This information is useful for integrations and clients that need to show some details of a site before providing authentication.
+Site is a special unauthenticated, read-only endpoint for retrieving basic information about a site. This information is
+useful for integrations and clients that need to show some details of a site before providing authentication.
 
 GET /admin/site/
 The site object
@@ -1463,9 +1599,11 @@ description: String The description of the site, same as the description returne
 
 logo: String The logo of the site, provided as a relative path. Same as the logo returned from the settings endpoint.
 
-url: URI The frontend URL for the site, which can be different to the Ghost Admin / API URL. This comes from the configuration JSON file.
+url: URI The frontend URL for the site, which can be different to the Ghost Admin / API URL. This comes from the
+configuration JSON file.
 
-version: Semver String (major.minor) The current version of the Ghost site. Use this to check the minimum version is high enough for compatibility with integrations.
+version: Semver String (major.minor) The current version of the Ghost site. Use this to check the minimum version is
+high enough for compatibility with integrations.
 
 // GET admin/site/
 {
@@ -1478,7 +1616,10 @@ version: Semver String (major.minor) The current version of the Ghost site. Use 
 }
 }
 Webhooks
-Webhooks allow you to build or set up custom integrations, which subscribe to certain events in Ghost. When one of such events is triggered, Ghost sends a HTTP POST payload to the webhook’s configured URL. For instance, when a new post is published Ghost can send a notification to configured endpoint to trigger a search index re-build, slack notification, or whole site deploy. For more information about webhooks read this webhooks reference.
+Webhooks allow you to build or set up custom integrations, which subscribe to certain events in Ghost. When one of such
+events is triggered, Ghost sends a HTTP POST payload to the webhook’s configured URL. For instance, when a new post is
+published Ghost can send a notification to configured endpoint to trigger a search index re-build, slack notification,
+or whole site deploy. For more information about webhooks read this webhooks reference.
 
 POST /admin/webhooks/
 PUT /admin/webhooks/{id}/
@@ -1488,7 +1629,8 @@ Webhooks can be created, updated, and removed. There is no API to retrieve webho
 
 Creating a Webhook
 POST /admin/webhooks/
-Required fields: event, target_url Conditionally required field: integration_id - required if request is done using user authentication Optional fields: name, secret, api_version
+Required fields: event, target_url Conditionally required field: integration_id - required if request is done using user
+authentication Optional fields: name, secret, api_version
 
 Below is a minimal example to create a webhook using token authenticated request:
 

@@ -1,21 +1,29 @@
 Content API
-Ghost’s RESTful Content API delivers published content to the world and can be accessed in a read-only manner by any client to render in a website, app, or other embedded media.
+Ghost’s RESTful Content API delivers published content to the world and can be accessed in a read-only manner by any
+client to render in a website, app, or other embedded media.
 
-Access control is managed via an API key, and even the most complex filters are made simple with our SDK. The Content API is designed to be fully cachable, meaning you can fetch data as often as you like without limitation.
+Access control is managed via an API key, and even the most complex filters are made simple with our SDK. The Content
+API is designed to be fully cachable, meaning you can fetch data as often as you like without limitation.
 
 API Clients
 JavaScript Client Library
-We’ve developed an API client for JavaScript that will allow you to quickly and easily interact with the Content API. The client is an advanced wrapper on top of our REST API - everything that can be done with the Content API can be done using the client, with no need to deal with the details of authentication or the request & response format.
+We’ve developed an API client for JavaScript that will allow you to quickly and easily interact with the Content API.
+The client is an advanced wrapper on top of our REST API - everything that can be done with the Content API can be done
+using the client, with no need to deal with the details of authentication or the request & response format.
 
 URL
 https://{admin_domain}/ghost/api/content/
 
-Your admin domain can be different to your site domain. Using the correct domain and protocol are critical to getting consistent behaviour, particularly when dealing with CORS in the browser. All Ghost(Pro) blogs have a *.ghost.io domain as their admin domain and require https.
+Your admin domain can be different to your site domain. Using the correct domain and protocol are critical to getting
+consistent behaviour, particularly when dealing with CORS in the browser. All Ghost(Pro) blogs have a *.ghost.io domain
+as their admin domain and require https.
 
 Key
 ?key={key}
 
-Content API keys are provided via a query parameter in the URL. These keys are safe for use in browsers and other insecure environments, as they only ever provide access to public data. Sites in private mode should consider where they share any keys they create.
+Content API keys are provided via a query parameter in the URL. These keys are safe for use in browsers and other
+insecure environments, as they only ever provide access to public data. Sites in private mode should consider where they
+share any keys they create.
 
 Obtain the Content API URL and key by creating a new Custom Integration under the Integrations screen in Ghost Admin.
 
@@ -23,33 +31,39 @@ Get a Ghost Content API key
 Accept-Version Header
 Accept-Version: v{major}.{minor}
 
-Use the Accept-Version header to indicate the minimum version of Ghost’s API to operate with. See API Versioning for more details.
+Use the Accept-Version header to indicate the minimum version of Ghost’s API to operate with. See API Versioning for
+more details.
 
 Working Example
+
 # cURL
+
 # Real endpoint - copy and paste to see!
+
 curl -H "Accept-Version: v5.0" "https://demo.ghost.io/ghost/api/content/posts/?key=22444f78447824223cefc48062"
 Endpoints
-The Content API provides access to Posts, Pages, Tags, Authors, Tiers, and Settings. All endpoints return JSON and are considered stable.
+The Content API provides access to Posts, Pages, Tags, Authors, Tiers, and Settings. All endpoints return JSON and are
+considered stable.
 
 Working Example
-Verb	Path	Method
-GET	/posts/	Browse posts
-GET	/posts/{id}/	Read a post by ID
-GET	/posts/slug/{slug}/	Read a post by slug
-GET	/authors/	Browse authors
-GET	/authors/{id}/	Read an author by ID
-GET	/authors/slug/{slug}/	Read a author by slug
-GET	/tags/	Browse tags
-GET	/tags/{id}/	Read a tag by ID
-GET	/tags/slug/{slug}/	Read a tag by slug
-GET	/pages/	Browse pages
-GET	/pages/{id}/	Read a page by ID
-GET	/pages/slug/{slug}/	Read a page by slug
-GET	/tiers/
+Verb Path Method
+GET /posts/ Browse posts
+GET /posts/{id}/ Read a post by ID
+GET /posts/slug/{slug}/ Read a post by slug
+GET /authors/ Browse authors
+GET /authors/{id}/ Read an author by ID
+GET /authors/slug/{slug}/ Read a author by slug
+GET /tags/ Browse tags
+GET /tags/{id}/ Read a tag by ID
+GET /tags/slug/{slug}/ Read a tag by slug
+GET /pages/ Browse pages
+GET /pages/{id}/ Read a page by ID
+GET /pages/slug/{slug}/ Read a page by slug
+GET /tiers/
 Browse tiers
-GET	/settings/	Browse settings
-The Content API supports two types of request: Browse and Read. Browse endpoints allow you to fetch lists of resources, whereas Read endpoints allow you to fetch a single resource.
+GET /settings/ Browse settings
+The Content API supports two types of request: Browse and Read. Browse endpoints allow you to fetch lists of resources,
+whereas Read endpoints allow you to fetch a single resource.
 
 Resources
 The API will always return valid JSON in the same structure:
@@ -60,17 +74,20 @@ The API will always return valid JSON in the same structure:
 }],
 "meta": {}
 }
-resource_type: will always match the resource name in the URL. All resources are returned wrapped in an array, with the exception of /site/ and /settings/.
+resource_type: will always match the resource name in the URL. All resources are returned wrapped in an array, with the
+exception of /site/ and /settings/.
 meta: contains pagination information for browse requests.
 Posts
-Posts are the primary resource in a Ghost site. Using the posts endpoint it is possible to get lists of posts filtered by various criteria.
+Posts are the primary resource in a Ghost site. Using the posts endpoint it is possible to get lists of posts filtered
+by various criteria.
 
 GET /content/posts/
 GET /content/posts/{id}/
 GET /content/posts/slug/{slug}/
 By default, posts are returned in reverse chronological order by published date when fetching more than one.
 
-The most common gotcha when fetching posts from the Content API is not using the include parameter to request related data such as tags and authors. By default, the response for a post will not include these:
+The most common gotcha when fetching posts from the Content API is not using the include parameter to request related
+data such as tags and authors. By default, the response for a post will not include these:
 
 {
 "posts": [
@@ -110,11 +127,15 @@ The most common gotcha when fetching posts from the Content API is not using the
 }
 ]
 }
-Posts allow you to include authors and tags using &include=authors,tags, which will add an authors and tags array to the response, as well as both a primary_author and primary_tag object.
+Posts allow you to include authors and tags using &include=authors,tags, which will add an authors and tags array to the
+response, as well as both a primary_author and primary_tag object.
 
 Working Example
+
 # cURL
+
 # Real endpoint - copy and paste to see!
+
 curl "https://demo.ghost.io/ghost/api/content/posts/?key=22444f78447824223cefc48062&include=tags,authors"
 Returns:
 
@@ -209,7 +230,8 @@ Returns:
 ]
 }
 Pages
-Pages are static resources that are not included in channels or collections on the Ghost front-end. The API will only return pages that were created as resources and will not contain routes created with dynamic routing.
+Pages are static resources that are not included in channels or collections on the Ghost front-end. The API will only
+return pages that were created as resources and will not contain routes created with dynamic routing.
 
 GET /content/pages/
 GET /content/pages/{id}/
@@ -224,9 +246,11 @@ Tags are the primary taxonomy within a Ghost site.
 GET /content/tags/
 GET /content/tags/{id}/
 GET /content/tags/slug/{slug}/
-By default, internal tags are always included, use filter=visibility:public to limit the response directly or use the tags helper to handle filtering and outputting the response.
+By default, internal tags are always included, use filter=visibility:public to limit the response directly or use the
+tags helper to handle filtering and outputting the response.
 
-Tags that are not associated with a post are not returned. You can supply include=count.posts to retrieve the number of posts associated with a tag.
+Tags that are not associated with a post are not returned. You can supply include=count.posts to retrieve the number of
+posts associated with a tag.
 
 {
 "tags": [
@@ -261,7 +285,8 @@ Authors are a subset of users who have published posts associated with them.
 GET /content/authors/
 GET /content/authors/{id}/
 GET /content/authors/slug/{slug}/
-Authors that are not associated with a post are not returned. You can supply include=count.posts to retrieve the number of posts associated with an author.
+Authors that are not associated with a post are not returned. You can supply include=count.posts to retrieve the number
+of posts associated with an author.
 
 {
 "authors": [
@@ -286,7 +311,8 @@ Settings
 Settings contain the global settings for a site.
 
 GET /content/settings/
-The settings endpoint is a special case. You will receive a single object, rather than an array. This endpoint doesn’t accept any query parameters.
+The settings endpoint is a special case. You will receive a single object, rather than an array. This endpoint doesn’t
+accept any query parameters.
 
 {
 "settings": {
@@ -334,7 +360,8 @@ The settings endpoint is a special case. You will receive a single object, rathe
 }
 }
 Tiers
-Tiers allow publishers to create multiple options for an audience to become paid subscribers. Each tier can have its own price points, benefits, and content access levels. Ghost connects tiers directly to the publication’s Stripe account.
+Tiers allow publishers to create multiple options for an audience to become paid subscribers. Each tier can have its own
+price points, benefits, and content access levels. Ghost connects tiers directly to the publication’s Stripe account.
 
 Usage
 The tiers endpoint returns a list of tiers for the site, filtered by their visibility criteria.
@@ -375,8 +402,11 @@ Tiers are returned in order of increasing monthly price.
 ]
 }
 Working example
+
 # cURL
+
 # Real endpoint - copy and paste to see!
+
 curl "https://demo.ghost.io/ghost/api/content/tiers/?key=22444f78447824223cefc48062&include=benefits,monthly_price,yearly_price"
 returns:
 
@@ -428,12 +458,15 @@ returns:
 }
 }
 Parameters
-Query parameters provide fine-grained control over responses. All endpoints accept include and fields. Browse endpoints additionally accept filter, limit, page and order.
+Query parameters provide fine-grained control over responses. All endpoints accept include and fields. Browse endpoints
+additionally accept filter, limit, page and order.
 
-The values provided as query parameters MUST be url encoded when used directly. The client libraries will handle this for you.
+The values provided as query parameters MUST be url encoded when used directly. The client libraries will handle this
+for you.
 
 Include
-Tells the API to return additional data related to the resource you have requested. The following includes are available:
+Tells the API to return additional data related to the resource you have requested. The following includes are
+available:
 
 Posts & Pages: authors, tags
 Authors: count.posts
@@ -508,11 +541,14 @@ The syntax for modifying this follows SQL order by syntax:
 
 &order=published_at%20asc would return posts with the newest post last
 Filtering
-Ghost uses a query language called NQL to allow filtering API results. You can filter any field or included field using matches, greater/less than or negation, as well as combining with and/or. NQL doesn’t yet support ’like’ or partial matches.
+Ghost uses a query language called NQL to allow filtering API results. You can filter any field or included field using
+matches, greater/less than or negation, as well as combining with and/or. NQL doesn’t yet support ’like’ or partial
+matches.
 
 Filter strings must be URL encoded. The {{get}} helper and client library handle this for you.
 
-At it’s most simple, filtering works the same as in GMail, GitHub or Slack - you provide a field and a value, separated by a colon.
+At it’s most simple, filtering works the same as in GMail, GitHub or Slack - you provide a field and a value, separated
+by a colon.
 
 Syntax Reference
 Filter Expressions
@@ -554,7 +590,10 @@ Can use - or +
 Any integer can be used for the size of the interval
 Supports the following intervals: d, w, M, y, h, m, s
 Operators
-- - not
+
+-
+ - not
+
 > - greater than
     >= - greater than or equals
     < - less than
@@ -564,14 +603,20 @@ Operators
     ~$ - ends with
     [ value, value, … ] - “in” group, can be negated with -
     Combinations
-+ - represents and
-    , - represents or
-    ( filter expression ) - overrides operator precedence
-    Strings vs Literals
-    Most of the time, there’s no need to put quotes around strings when building filters in Ghost. If you filter based on slugs, slugs are always compatible with literals. However, in some cases you may need to use a string that contains one of the other characters used in the filter syntax, e.g. dates & times contain:. Use single-quotes for these.
+
++
+ - represents and
+   , - represents or
+   ( filter expression ) - overrides operator precedence
+   Strings vs Literals
+   Most of the time, there’s no need to put quotes around strings when building filters in Ghost. If you filter based on
+   slugs, slugs are always compatible with literals. However, in some cases you may need to use a string that contains
+   one of the other characters used in the filter syntax, e.g. dates & times contain:. Use single-quotes for these.
 
 Pagination
-All browse endpoints are paginated, returning 15 records by default. You can use the page and limit parameters to move through the pages of records. The response object contains a meta.pagination key with information on the current location within the records:
+All browse endpoints are paginated, returning 15 records by default. You can use the page and limit parameters to move
+through the pages of records. The response object contains a meta.pagination key with information on the current
+location within the records:
 
 "meta":{
 "pagination":{
@@ -591,7 +636,8 @@ Status 401: Authentication failures e.g. unrecognized keys
 Status 403: Permissions errors e.g. under-privileged users
 Status 404: Unknown resources e.g. data which is not public
 Status 500: Server errors e.g. where something has gone
-Errors are also formatted in JSON, as an array of error objects. The HTTP status code of the response along with the errorType property indicate the type of error.
+Errors are also formatted in JSON, as an array of error objects. The HTTP status code of the response along with the
+errorType property indicate the type of error.
 
 The message field is designed to provide clarity on what exactly has gone wrong.
 

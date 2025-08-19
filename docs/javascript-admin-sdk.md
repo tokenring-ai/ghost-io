@@ -1,5 +1,7 @@
 Admin API JavaScript Client
-Admin API keys should remain secret, and therefore this promise-based JavaScript library is designed for server-side usage only. This library handles all the details of generating correctly formed urls and tokens, authenticating and making requests.
+Admin API keys should remain secret, and therefore this promise-based JavaScript library is designed for server-side
+usage only. This library handles all the details of generating correctly formed urls and tokens, authenticating and
+making requests.
 
 Working Example
 const api = new GhostAdminAPI({
@@ -10,7 +12,10 @@ version: "v5.0",
 
 api.posts.add({
 title: 'My first draft API post',
-lexical: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Hello, beautiful world! 👋","type":"extended-text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+lexical: '{"root":{"children":[{"
+children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Hello, beautiful world! 👋","type":"extended-text","version":1}],"
+direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"
+type":"root","version":1}}'
 });
 Authentication
 The client requires the host address of your Ghost API and an Admin API key in order to authenticate.
@@ -18,7 +23,8 @@ The client requires the host address of your Ghost API and an Admin API key in o
 url - API domain, must not end in a trailing slash.
 key - string copied from the “Integrations” screen in Ghost Admin
 version - minimum version of the API your code works with
-The url and key values can be obtained by creating a new Custom Integration under the Integrations screen in Ghost Admin.
+The url and key values can be obtained by creating a new Custom Integration under the Integrations screen in Ghost
+Admin.
 
 Get Ghost Admin API credentials
 See the documentation on Admin API authentication for more explanation.
@@ -80,10 +86,12 @@ let imagePromises = [];
             images.forEach(image => html = html.replace(image.ref, image.url));
             return html;
         });
+
 }
 
 // Your content
-let html = '<p>My test post content.</p><figure><img src="/path/to/my/image.jpg" /><figcaption>My awesome photo</figcaption></figure>';
+let html = '<p>My test post content.</p><figure><img src="/path/to/my/image.jpg" /><figcaption>My awesome
+photo</figcaption></figure>';
 
 return processImagesInHTML(html)
 .then(html => {
@@ -97,6 +105,7 @@ return api.posts
 
     })
     .catch(err => console.log(err));
+
 Installation
 yarn add @tryghost/admin-api
 
