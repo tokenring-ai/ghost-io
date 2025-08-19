@@ -107,7 +107,7 @@ uint8Array: imageData,
 }*/
 
   //debugger;
-  const extension: string = imageResult.mimeType.split("/")[1];
+  const extension: string = imageResult.mediaType.split("/")[1];
 
   // Ensure the directory exists
   await fileSystemService.createDirectory(imageDir, {recursive: true});
