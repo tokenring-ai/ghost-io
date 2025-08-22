@@ -12,8 +12,6 @@ import GhostIOService from "../GhostIOService.ts";
 interface GenerateImageParams {
   prompt?: string;
   aspectRatio?: "square" | "tall" | "wide";
-  detail?: "low" | "high" | "auto";
-  model?: string;
 }
 
 interface Post {
@@ -63,7 +61,7 @@ export async function execute(
 
   // Get an image generation client
   const imageClient =
-    await modelRegistry.imageGeneration.getFirstOnlineClient("gpt-image-1");
+    await modelRegistry.imageGeneration.getFirstOnlineClient(ghostService.imageGenerationModel);
 
   chatService.infoLine(`[Ghost.io] Using model: ${imageClient.getModelId()}`);
 
@@ -100,13 +98,6 @@ export async function execute(
   const dateStr: string = now.toISOString().split("T")[0]; // YYYY-MM-DD format
   const imageDir: string = `images/${dateStr}`;
 
-  /*const imageData = await fileSystemService.readFile(`${imageDir}/3c445fe5-7ff5-488b-a3f0-022251db0ef9.png`);
-const imageResult = {
-mimeType: 'image/png',
-uint8Array: imageData,
-}*/
-
-  //debugger;
   const extension: string = imageResult.mediaType.split("/")[1];
 
   // Ensure the directory exists
@@ -162,14 +153,5 @@ export const inputSchema = z.object({
       "Aspect ratio of the image: square (1024x1024), tall (1024x1536), or wide (1536x1024)",
     )
     .default("square")
-    .optional(),
-  detail: z
-    .enum(["low", "high", "auto"])
-    .describe("Detail level for image generation")
-    .default("auto")
-    .optional(),
-  model: z
-    .string()
-    .describe("Specific image generation model to use (optional)")
     .optional(),
 });

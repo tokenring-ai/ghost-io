@@ -9,6 +9,7 @@ interface GhostIOServiceOptions {
   url: string;
   adminApiKey: string;
   contentApiKey: string;
+  imageGenerationModel: string;
 }
 
 interface CreatePostData {
@@ -72,9 +73,7 @@ export default class GhostIOService extends GhostIOServiceType {
    */
   description: string = "Service for interacting with the Ghost.io blogging platform";
 
-  private url: string;
-  private adminApiKey: string;
-  private contentApiKey: string;
+  readonly imageGenerationModel: string;
   private currentPost: GhostPost | null;
   private readonly adminAPI: GhostAdminAPI;
   private readonly contentAPI: GhostContentAPI;
@@ -83,7 +82,7 @@ export default class GhostIOService extends GhostIOServiceType {
   /**
    * Creates an instance of GhostIOService
    */
-  constructor({url, adminApiKey, contentApiKey}: GhostIOServiceOptions) {
+  constructor({url, adminApiKey, contentApiKey, imageGenerationModel}: GhostIOServiceOptions) {
     super();
 
     if (!url) {
@@ -100,9 +99,7 @@ export default class GhostIOService extends GhostIOServiceType {
       );
     }
 
-    this.url = url;
-    this.adminApiKey = adminApiKey;
-    this.contentApiKey = contentApiKey;
+    this.imageGenerationModel = imageGenerationModel;
     this.currentPost = null; // Currently selected post object
     this.adminAPI = new GhostAdminAPI({
       // Ghost Admin API client
@@ -182,8 +179,7 @@ export default class GhostIOService extends GhostIOServiceType {
         } as GhostPost;
       });
     } catch (error) {
-      console.error("Failed to fetch posts:", error);
-      throw new Error(`Failed to fetch posts: ${(error as Error).message}`);
+     throw new Error(`Failed to fetch posts: ${(error as Error).message}`);
     }
   }
 
@@ -260,7 +256,6 @@ export default class GhostIOService extends GhostIOServiceType {
 
       return typedPost;
     } catch (error) {
-      console.error("Failed to update post:", error);
       throw new Error(`Failed to update post: ${(error as Error).message}`);
     }
   }
@@ -300,7 +295,6 @@ export default class GhostIOService extends GhostIOServiceType {
       this.currentPost = typedPost;
       return typedPost;
     } catch (error) {
-      console.error("Failed to publish post:", error);
       throw new Error(`Failed to publish post: ${(error as Error).message}`);
     }
   }
@@ -333,7 +327,6 @@ export default class GhostIOService extends GhostIOServiceType {
       this.currentPost = typedPost;
       return typedPost;
     } catch (error) {
-      console.error("Failed to select post:", error);
       throw new Error(`Failed to select post: ${(error as Error).message}`);
     }
   }
