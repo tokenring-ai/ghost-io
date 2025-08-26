@@ -6,4 +6,5 @@ export const description = packageJSON.description;
 
 export * as chatCommands from "./chatCommands.ts";
 export {default as GhostIOService} from "./GhostIOService.ts";
+export {default as GhostCDNService} from "./GhostCDNResource.ts";
 export * as tools from "./tools.ts";

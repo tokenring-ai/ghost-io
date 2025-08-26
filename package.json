@@ -6,6 +6,7 @@
   "@lexical/headless": "^0.33.1",
   "@lexical/markdown": "^0.33.1",
   "@token-ring/ai-client": "0.1.0",
+  "@token-ring/cdn": "0.1.0",
   "@token-ring/chat": "0.1.0",
   "@token-ring/filesystem": "0.1.0",
   "@token-ring/registry": "0.1.0",

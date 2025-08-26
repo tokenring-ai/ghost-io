@@ -3,18 +3,6 @@ import ChatService from "@token-ring/chat/ChatService";
 import {Registry} from "@token-ring/registry";
 import GhostIOService, {GhostPost} from "../GhostIOService.ts";
 
-interface TreeNode {
-  name: string;
-  value: string;
-  data: any | null;
-}
-
-interface TreeData {
-  name: string;
-  children: TreeNode[];
-}
-
-
 /**
  * /ghost [action] [subaction] - Manage Ghost.io blog posts
  *

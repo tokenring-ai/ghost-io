@@ -1,9 +1,7 @@
 import ModelRegistry from "@token-ring/ai-client/ModelRegistry";
-import {ModelTypeRegistry} from "@token-ring/ai-client/ModelTypeRegistry";
+import CDNService from "@token-ring/cdn/CDNService";
 import ChatService from "@token-ring/chat/ChatService";
-import FileSystemService from "@token-ring/filesystem/FileSystemService";
 import {Registry} from "@token-ring/registry";
-import FormData from "form-data";
 import {Buffer} from "node:buffer";
 import {v4 as uuid} from "uuid";
 import {z} from "zod";
@@ -29,7 +27,6 @@ interface OperationResult {
   message?: string;
   error?: string;
   suggestion?: string;
-  imagePath?: string;
   ghostImageUrl?: string;
 }
 
@@ -39,13 +36,12 @@ export const name = "ghost/generateImageForPost";
  * Generates an image for a Ghost.io post using AI image generation
  */
 export async function execute(
-  {prompt, aspectRatio = "square", detail = "auto", model}: GenerateImageParams,
+  {prompt, aspectRatio = "square"}: GenerateImageParams,
   registry: Registry,
 ): Promise<OperationResult> {
   const chatService = registry.requireFirstServiceByType(ChatService);
   const ghostService = registry.requireFirstServiceByType(GhostIOService);
-  const fileSystemService =
-    registry.requireFirstServiceByType(FileSystemService);
+  const cdnService = registry.requireFirstServiceByType(CDNService);
   const modelRegistry = registry.requireFirstServiceByType(ModelRegistry);
 
   chatService.infoLine(`[Ghost.io] Generating image for post: "${prompt}"`);
@@ -93,36 +89,17 @@ export async function execute(
 
   chatService.infoLine(`[Ghost.io] Image generated successfully`);
 
-  // Create directory structure: images/YYYY-MM-DD/
-  const now = new Date();
-  const dateStr: string = now.toISOString().split("T")[0]; // YYYY-MM-DD format
-  const imageDir: string = `images/${dateStr}`;
-
   const extension: string = imageResult.mediaType.split("/")[1];
-
-  // Ensure the directory exists
-  await fileSystemService.createDirectory(imageDir, {recursive: true});
-
-  // Generate filename with UUID
   const filename: string = `${uuid()}.${extension}`;
-  const imagePath: string = `${imageDir}/${filename}`;
-
   const imageBuffer: Buffer = Buffer.from(imageResult.uint8Array);
 
-  await fileSystemService.writeFile(imagePath, imageBuffer);
+  // Upload to CDN
+  const uploadResult = await cdnService.upload(ghostService.cdn, imageBuffer, {
+    filename,
+    contentType: imageResult.mediaType,
+  });
 
-  chatService.infoLine(`[Ghost.io] Image saved to: ${imagePath}`);
-
-  const formData = new FormData();
-  formData.append("file", imageBuffer, {filename});
-  formData.append("purpose", "image");
-
-  //debugger;
-  const uploadResult: UploadResult = await ghostService.uploadImage(formData); // Use the accessor method
-
-  chatService.infoLine(
-    `[Ghost.io] Image uploaded to Ghost: ${uploadResult.url}`,
-  );
+  chatService.infoLine(`[Ghost.io] Image uploaded to CDN: ${uploadResult.url}`);
 
   // Update the current post with the featured image
   const updatedPost = await ghostService.editPost({
@@ -137,7 +114,6 @@ export async function execute(
   return {
     success: true,
     message: `Image generated and set as featured image for post "${currentPost.title}"`,
-    imagePath,
     ghostImageUrl: uploadResult.url,
   };
 }

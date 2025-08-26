@@ -5,11 +5,12 @@ import GhostAdminAPI from "@tryghost/admin-api";
 // @ts-ignore
 import GhostContentAPI from "@tryghost/content-api";
 
-interface GhostIOServiceOptions {
+export interface GhostIOServiceOptions {
   url: string;
   adminApiKey: string;
   contentApiKey: string;
   imageGenerationModel: string;
+  cdn: string;
 }
 
 interface CreatePostData {
@@ -77,12 +78,13 @@ export default class GhostIOService extends GhostIOServiceType {
   private currentPost: GhostPost | null;
   private readonly adminAPI: GhostAdminAPI;
   private readonly contentAPI: GhostContentAPI;
-  private registry: Registry | undefined;
+  private registry!: Registry;
+  readonly cdn: string;
 
   /**
    * Creates an instance of GhostIOService
    */
-  constructor({url, adminApiKey, contentApiKey, imageGenerationModel}: GhostIOServiceOptions) {
+  constructor({url, adminApiKey, contentApiKey, imageGenerationModel, cdn}: GhostIOServiceOptions) {
     super();
 
     if (!url) {
@@ -97,6 +99,10 @@ export default class GhostIOService extends GhostIOServiceType {
       throw new Error(
         "Error in Ghost configuration: contentApiKey not provided",
       );
+    }
+
+    if (!cdn) {
+      throw new Error("Error in Ghost configuration: cdn not provided");
     }
 
     this.imageGenerationModel = imageGenerationModel;
@@ -114,6 +120,8 @@ export default class GhostIOService extends GhostIOServiceType {
       version: "v5.0",
       key: contentApiKey,
     });
+
+    this.cdn = cdn;
   }
 
 
@@ -162,12 +170,6 @@ export default class GhostIOService extends GhostIOServiceType {
    * Fetches all posts from the Ghost.io API
    */
   async getAllPosts(): Promise<GhostPost[]> {
-    if (!this.contentAPI) {
-      throw new Error(
-        "Content API not initialized. Check your API key and URL.",
-      );
-    }
-
     try {
       const posts = await this.adminAPI.posts.browse({limit: "all"});
       // Ensure all posts conform to the GhostPost interface
@@ -187,10 +189,6 @@ export default class GhostIOService extends GhostIOServiceType {
    * Creates a new post on Ghost.io
    */
   async createPost({title, html, tags = [], published = false}: CreatePostData): Promise<GhostPost> {
-    if (!this.adminAPI) {
-      throw new Error("Admin API not initialized. Check your API key and URL.");
-    }
-
     if (this.currentPost) {
       throw new Error(
         "A post is currently selected. Clear the selection before creating a new post.",
@@ -264,10 +262,6 @@ export default class GhostIOService extends GhostIOServiceType {
    * Publishes the currently selected post
    */
   async publishPost(): Promise<GhostPost> {
-    if (!this.adminAPI) {
-      throw new Error("Admin API not initialized. Check your API key and URL.");
-    }
-
     if (!this.currentPost) {
       throw new Error(
         "No post is currently selected. Select a post before publishing.",
@@ -303,12 +297,6 @@ export default class GhostIOService extends GhostIOServiceType {
    * Selects a post by ID
    */
   async selectPostById(id: string): Promise<GhostPost> {
-    if (!this.contentAPI) {
-      throw new Error(
-        "Content API not initialized. Check your API key and URL.",
-      );
-    }
-
     try {
       // In a real implementation, we would use the Ghost Content SDK to fetch a post by ID
       const post = await this.contentAPI.posts.read({id});
@@ -332,31 +320,9 @@ export default class GhostIOService extends GhostIOServiceType {
   }
 
   /**
-   * Upload an image to Ghost
-   */
-  async uploadImage(formData: any): Promise<any> {
-    if (!this.adminAPI) {
-      throw new Error("Admin API not initialized. Check your API key and URL.");
-    }
-
-    try {
-      // Use type assertion to bypass the type checking for the images property
-      // This is necessary because the @tryghost/admin-api type definitions might be incomplete
-      return await (this.adminAPI).images.upload(formData);
-    } catch (error) {
-      console.error("Failed to upload image:", error);
-      throw new Error(`Failed to upload image: ${(error as Error).message}`);
-    }
-  }
-
-  /**
    * Edit a post with specific properties
    */
   async editPost(postData: any): Promise<GhostPost> {
-    if (!this.adminAPI) {
-      throw new Error("Admin API not initialized. Check your API key and URL.");
-    }
-
     try {
       const post = await this.adminAPI.posts.edit(postData);
 
@@ -371,15 +337,4 @@ export default class GhostIOService extends GhostIOServiceType {
       throw new Error(`Failed to edit post: ${(error as Error).message}`);
     }
   }
-
-  /**
-   * Clears the current post when the chat is cleared
-   */
-  private clear = (type: string) => {
-    if (type !== "chat") return;
-    if (this.currentPost === null) return;
-    this.currentPost = null;
-    const chatService = this.registry?.requireFirstServiceByType(ChatService);
-    chatService?.systemLine("[Ghost.io] Clearing current post");
-  };
 }
