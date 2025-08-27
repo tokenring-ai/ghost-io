@@ -128,12 +128,12 @@ export default class GhostIOService extends GhostIOServiceType {
   async start(registry: Registry): Promise<void> {
     const chatContext = registry.requireFirstServiceByType(ChatService);
     this.registry = registry;
-    chatContext.on("clear", this.clearCurrentPost.bind(this));
+    chatContext.on("reset", this.resetCurrentPost.bind(this));
   }
 
   async stop(registry: Registry): Promise<void> {
     const chatContext = registry.requireFirstServiceByType(ChatService);
-    chatContext.off("clear", this.clearCurrentPost.bind(this));
+    chatContext.off("reset", this.resetCurrentPost.bind(this));
   }
 
   /**
@@ -141,14 +141,14 @@ export default class GhostIOService extends GhostIOServiceType {
    * This is a callback for the 'clear' event on ChatService.
    * @private
    */
-  clearCurrentPost(type: string): void {
-    if (type === 'chat') {
-      if (this.currentPost === null) return;
-      this.currentPost = null;
+  resetCurrentPost(type: string): void {
+    if (type === 'state') {
       const chatService = this.registry?.requireFirstServiceByType(ChatService);
       if (chatService) {
-        chatService?.systemLine("[Ghost.io] Clearing current post");
+        chatService?.systemLine("[Ghost.io] Resetting current post");
       }
+
+      this.currentPost = null;
     }
   }
 
