@@ -38,7 +38,7 @@ export async function execute(
   const chatService = registry.requireFirstServiceByType(ChatService);
   const ghostService = registry.requireFirstServiceByType(GhostIOService);
 
-  chatService.infoLine(`[Ghost.io] Creating new post: "${title}"}`);
+  chatService.infoLine(`[Ghost.io] Creating new post: "${title}"`);
 
   if (!content) {
     throw new Error(`[${name}] Content is required`);
