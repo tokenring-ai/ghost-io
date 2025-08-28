@@ -7,7 +7,7 @@ import {v4 as uuid} from "uuid";
 
 export interface GhostCDNResourceOptions {
   url: string;
-  adminApiKey: string;
+  apiKey: string;
 }
 
 export default class GhostCDNResource extends CDNResource {
@@ -19,22 +19,22 @@ export default class GhostCDNResource extends CDNResource {
   /**
    * Creates an instance of GhostIOService
    */
-  constructor({url, adminApiKey}: GhostCDNResourceOptions) {
+  constructor({url, apiKey}: GhostCDNResourceOptions) {
     super();
 
     if (!url) {
       throw new Error("Error in Ghost config: No url provided");
     }
 
-    if (!adminApiKey) {
-      throw new Error("Error in Ghost configuration: adminApiKey not provided");
+    if (!apiKey) {
+      throw new Error("Error in Ghost configuration: apiKey not provided");
     }
 
     this.adminAPI = new GhostAdminAPI({
       // Ghost Admin API client
       url,
       version: "v5.0",
-      key: adminApiKey,
+      key: apiKey,
     });
   }
 
