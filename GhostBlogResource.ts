@@ -1,39 +1,18 @@
-
-import {BlogResource} from "@tokenring-ai/blog";
-import {BlogPost, BlogResourceOptions, CreatePostData, UpdatePostData} from "@tokenring-ai/blog/BlogResource";
-import Agent, {AgentStateSlice} from "@tokenring-ai/agent/Agent";
-import {ResetWhat} from "@tokenring-ai/agent/AgentEvents";
+import Agent from "@tokenring-ai/agent/Agent";
+import {
+  BlogPost,
+  BlogResource,
+  BlogResourceOptions,
+  CreatePostData,
+  UpdatePostData
+} from "@tokenring-ai/blog/BlogResource";
 // @ts-ignore
 import GhostAdminAPI from "@tryghost/admin-api";
+import {GhostBlogState} from "./state/GhostBlogState.js";
 
 export interface GhostIOServiceOptions extends BlogResourceOptions{
   url: string;
   apiKey: string;
-}
-
-class BlogState implements AgentStateSlice {
-  name = "BlogState";
-  currentPost: GhostPost | null;
-
-  constructor({currentPost}: { currentPost?: GhostPost | null } = {}) {
-    this.currentPost = currentPost || null;
-  }
-
-  reset(what: ResetWhat[]): void {
-    if (what.includes('chat')) {
-      this.currentPost = null;
-    }
-  }
-
-  serialize(): object {
-    return {
-      currentPost: this.currentPost,
-    };
-  }
-
-  deserialize(data: any): void {
-    this.currentPost = data.currentPost || null;
-  }
 }
 
 export interface GhostAdminAPI {
@@ -109,19 +88,35 @@ function BlogPostToGhostPost({id, title, content, status, created_at, updated_at
  * GhostIOResource provides an interface for interacting with the Ghost.io platform.
  * It allows for retrieving, creating, updating, and publishing blog posts.
  */
-export default class GhostBlogResource extends BlogResource {
+export default class GhostBlogResource implements BlogResource {
   static sampleArguments = {
     url: "https://ghost.io",
     apiKey: "YOUR_ADMIN_API_KEY",
   };
 
   private readonly adminAPI: GhostAdminAPI;
+  description: string;
+  cdnName: string;
+  imageGenerationModel: string;
 
   /**
    * Creates an instance of GhostIOService
    */
-  constructor({url, apiKey, imageGenerationModel, cdn}: GhostIOServiceOptions) {
-    super({ cdn, imageGenerationModel});
+  constructor({url, apiKey, imageGenerationModel, cdn, description}: GhostIOServiceOptions) {
+    if (!cdn) {
+      throw new Error("Error in Ghost config: No cdn provided");
+    }
+    this.cdnName = cdn;
+
+    if (!imageGenerationModel) {
+      throw new Error("Error in Ghost config: No imageGenerationModel provided");
+    }
+    this.imageGenerationModel = imageGenerationModel;
+
+    if (!description) {
+      throw new Error("Error in Ghost config: No description provided");
+    }
+    this.description = description;
 
     if (!url) {
       throw new Error("Error in Ghost config: No url provided");
@@ -144,22 +139,14 @@ export default class GhostBlogResource extends BlogResource {
   }
 
   async attach(agent: Agent): Promise<void> {
-    agent.initializeState(BlogState, {});
-  }
-
-  async start(agent: Agent): Promise<void> {
-    // No need for event listeners since state slice handles reset automatically
-  }
-
-  async stop(agent: Agent): Promise<void> {
-    // No need to remove event listeners
+    agent.initializeState(GhostBlogState, {});
   }
 
   /**
    * Gets the currently selected post
    */
   getCurrentPost(agent: Agent): BlogPost | null {
-    const currentPost = agent.getState(BlogState).currentPost;
+    const currentPost = agent.getState(GhostBlogState).currentPost;
     if (!currentPost) return null;
     return GhostPostToBlogPost(currentPost);
   }
@@ -177,7 +164,7 @@ export default class GhostBlogResource extends BlogResource {
    * Creates a new post on Ghost.io
    */
   async createPost({title, content, tags = [], feature_image}: CreatePostData, agent: Agent): Promise<BlogPost> {
-    const currentPost = agent.getState(BlogState).currentPost;
+    const currentPost = agent.getState(GhostBlogState).currentPost;
     if (currentPost) {
       throw new Error(
         "A post is currently selected. Clear the selection before creating a new post.",
@@ -195,7 +182,7 @@ export default class GhostBlogResource extends BlogResource {
       {source: "html"},
     );
 
-    agent.mutateState(BlogState, (state: BlogState) => {
+    agent.mutateState(GhostBlogState, (state: GhostBlogState) => {
       state.currentPost = post;
     });
 
@@ -207,7 +194,7 @@ export default class GhostBlogResource extends BlogResource {
    * Updates an existing post on Ghost.io
    */
   async updatePost({title, content, tags, feature_image}: UpdatePostData, agent: Agent): Promise<BlogPost> {
-    const currentPost = agent.getState(BlogState).currentPost;
+    const currentPost = agent.getState(GhostBlogState).currentPost;
     if (!currentPost) {
       throw new Error(
         "No post is currently selected. Select a post before updating.",
@@ -225,7 +212,7 @@ export default class GhostBlogResource extends BlogResource {
 
     const updatedPost: GhostPost = await this.adminAPI.posts.edit(updateData);
 
-    agent.mutateState(BlogState, (state: BlogState) => {
+    agent.mutateState(GhostBlogState, (state: GhostBlogState) => {
       state.currentPost = updatedPost;
     });
 
@@ -242,7 +229,7 @@ export default class GhostBlogResource extends BlogResource {
       throw new Error(`Post with ID ${id} not found`);
     }
 
-    agent.mutateState(BlogState, (state: BlogState) => {
+    agent.mutateState(GhostBlogState, (state: GhostBlogState) => {
       state.currentPost = post;
     });
 
@@ -250,7 +237,7 @@ export default class GhostBlogResource extends BlogResource {
   }
 
   async clearCurrentPost(agent: Agent): Promise<void> {
-    agent.mutateState(BlogState, (state: BlogState) => {
+    agent.mutateState(GhostBlogState, (state: GhostBlogState) => {
       state.currentPost = null;
     });
   }

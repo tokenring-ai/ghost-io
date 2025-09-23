@@ -11,9 +11,6 @@ export interface GhostCDNResourceOptions {
 }
 
 export default class GhostCDNResource extends CDNResource {
-  name = "GhostCDN";
-  description = "Ghost.io CDN implementation using Ghost's upload API";
-
   private readonly adminAPI: GhostAdminAPI;
 
   /**
