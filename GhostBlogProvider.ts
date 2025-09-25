@@ -1,16 +1,16 @@
 import Agent from "@tokenring-ai/agent/Agent";
 import {
   BlogPost,
-  BlogResource,
-  BlogResourceOptions,
+  BlogProvider,
+  BlogProviderOptions,
   CreatePostData,
   UpdatePostData
-} from "@tokenring-ai/blog/BlogResource";
+} from "@tokenring-ai/blog/BlogProvider";
 // @ts-ignore
 import GhostAdminAPI from "@tryghost/admin-api";
 import {GhostBlogState} from "./state/GhostBlogState.js";
 
-export interface GhostIOServiceOptions extends BlogResourceOptions{
+export interface GhostIOServiceOptions extends BlogProviderOptions{
   url: string;
   apiKey: string;
 }
@@ -46,7 +46,7 @@ export interface GhostPost {
   slug?: string;
 }
 
-function GhostPostToBlogPost({id, created_at, updated_at, published_at, feature_image, title, content, status}: Partial<GhostPost>): BlogPost {
+function GhostPostToBlogPost({id, created_at, updated_at, published_at, feature_image, title, content, html, status}: Partial<GhostPost>): BlogPost {
   if (! id) {
     throw new Error("Cannot convert WPPost to BlogPost: Missing required field: id");
   }
@@ -61,7 +61,7 @@ function GhostPostToBlogPost({id, created_at, updated_at, published_at, feature_
   return {
     id: id,
     title: title,
-    content: content,
+    content: content ?? html,
     status: status,
     created_at: created_at ? new Date(created_at) : now,
     updated_at: updated_at ? new Date(updated_at) : now,
@@ -85,10 +85,10 @@ function BlogPostToGhostPost({id, title, content, status, created_at, updated_at
 
 
 /**
- * GhostIOResource provides an interface for interacting with the Ghost.io platform.
+ * GhostBlogProvider provides an interface for interacting with the Ghost.io platform.
  * It allows for retrieving, creating, updating, and publishing blog posts.
  */
-export default class GhostBlogResource implements BlogResource {
+export default class GhostBlogProvider implements BlogProvider {
   static sampleArguments = {
     url: "https://ghost.io",
     apiKey: "YOUR_ADMIN_API_KEY",
@@ -156,6 +156,7 @@ export default class GhostBlogResource implements BlogResource {
    */
   async getAllPosts(): Promise<BlogPost[]> {
     const posts = await this.adminAPI.posts.browse({limit: "all"});
+
     // Ensure all posts conform to the GhostPost interface
     return posts.map(GhostPostToBlogPost);
   }
@@ -193,7 +194,7 @@ export default class GhostBlogResource implements BlogResource {
   /**
    * Updates an existing post on Ghost.io
    */
-  async updatePost({title, content, tags, feature_image}: UpdatePostData, agent: Agent): Promise<BlogPost> {
+  async updatePost({title, content, tags, feature_image, status}: UpdatePostData, agent: Agent): Promise<BlogPost> {
     const currentPost = agent.getState(GhostBlogState).currentPost;
     if (!currentPost) {
       throw new Error(
@@ -209,6 +210,8 @@ export default class GhostBlogResource implements BlogResource {
     if (content) updateData.content = content;
     if (tags) updateData.tags = tags;
     if (feature_image) updateData.feature_image = feature_image;
+    if (status) updateData.status = status;
+
 
     const updatedPost: GhostPost = await this.adminAPI.posts.edit(updateData);
 
@@ -223,7 +226,7 @@ export default class GhostBlogResource implements BlogResource {
    * Selects a post by ID
    */
   async selectPostById(id: string, agent: Agent): Promise<BlogPost> {
-    const post: GhostPost | null | undefined = await this.adminAPI.posts.read({id});
+    const post: GhostPost | null | undefined = await this.adminAPI.posts.read({id, formats: 'html'});
 
     if (!post) {
       throw new Error(`Post with ID ${id} not found`);

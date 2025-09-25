@@ -1,22 +1,22 @@
-import CDNResource from "@tokenring-ai/cdn/CDNResource";
+import CDNProvider from "@tokenring-ai/cdn/CDNProvider";
 import {type UploadOptions, type UploadResult} from "@tokenring-ai/cdn/CDNService";
 // @ts-ignore
 import GhostAdminAPI from "@tryghost/admin-api";
 import FormData from "form-data";
 import {v4 as uuid} from "uuid";
 
-export interface GhostCDNResourceOptions {
+export interface GhostCDNProviderOptions {
   url: string;
   apiKey: string;
 }
 
-export default class GhostCDNResource extends CDNResource {
+export default class GhostCDNProvider extends CDNProvider {
   private readonly adminAPI: GhostAdminAPI;
 
   /**
    * Creates an instance of GhostIOService
    */
-  constructor({url, apiKey}: GhostCDNResourceOptions) {
+  constructor({url, apiKey}: GhostCDNProviderOptions) {
     super();
 
     if (!url) {

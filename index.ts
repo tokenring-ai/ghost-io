@@ -7,5 +7,5 @@ export const packageInfo: TokenRingPackage = {
   description: packageJSON.description
 };
 
-export {default as GhostBlogResource} from "./GhostBlogResource.ts";
-export {default as GhostCDNResource} from "./GhostCDNResource.ts";
+export {default as GhostBlogProvider} from "./GhostBlogProvider.ts";
+export {default as GhostCDNProvider} from "./GhostCDNProvider.ts";
