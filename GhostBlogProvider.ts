@@ -66,7 +66,9 @@ function GhostPostToBlogPost({id, created_at, updated_at, published_at, feature_
     created_at: created_at ? new Date(created_at) : now,
     updated_at: updated_at ? new Date(updated_at) : now,
     published_at: published_at ? new Date(published_at) : now,
-    feature_image
+    feature_image: {
+      url: feature_image,
+    }
   };
 }
 
@@ -79,7 +81,7 @@ function BlogPostToGhostPost({id, title, content, status, created_at, updated_at
     updated_at: updated_at.toISOString(),
     created_at: created_at.toISOString(),
     published_at: created_at.toISOString(),
-    feature_image
+    feature_image: feature_image?.url
   };
 }
 
@@ -178,7 +180,7 @@ export default class GhostBlogProvider implements BlogProvider {
         html: content,
         tags,
         status: "draft",
-        feature_image
+        feature_image: feature_image?.url,
       },
       {source: "html"},
     );
@@ -209,7 +211,7 @@ export default class GhostBlogProvider implements BlogProvider {
     if (title) updateData.title = title;
     if (content) updateData.content = content;
     if (tags) updateData.tags = tags;
-    if (feature_image) updateData.feature_image = feature_image;
+    if (feature_image) updateData.feature_image = feature_image?.url;
     if (status) updateData.status = status;
 
 
