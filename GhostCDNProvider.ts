@@ -1,5 +1,5 @@
 import CDNProvider from "@tokenring-ai/cdn/CDNProvider";
-import {type UploadOptions, type UploadResult} from "@tokenring-ai/cdn/CDNService";
+import {UploadOptions, UploadResult} from "@tokenring-ai/cdn/types";
 // @ts-ignore
 import GhostAdminAPI from "@tryghost/admin-api";
 import FormData from "form-data";

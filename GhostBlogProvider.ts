@@ -72,19 +72,6 @@ function GhostPostToBlogPost({id, created_at, updated_at, published_at, feature_
   };
 }
 
-function BlogPostToGhostPost({id, title, content, status, created_at, updated_at, feature_image}: BlogPost): Partial<GhostPost> {
-  return {
-    id,
-    title,
-    content,
-    status,
-    updated_at: updated_at.toISOString(),
-    created_at: created_at.toISOString(),
-    published_at: created_at.toISOString(),
-    feature_image: feature_image?.url
-  };
-}
-
 
 /**
  * GhostBlogProvider provides an interface for interacting with the Ghost.io platform.
@@ -207,6 +194,8 @@ export default class GhostBlogProvider implements BlogProvider {
     const updateData: GhostPost = {
       ...currentPost,
     };
+
+    if (status === "pending" || status === "private") throw new Error("Ghost does not support pending or private posts");
 
     if (title) updateData.title = title;
     if (content) updateData.content = content;

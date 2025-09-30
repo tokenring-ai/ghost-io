@@ -3,8 +3,8 @@
  "version": "0.1.0",
  "description": "Ghost.io integration for Token Ring",
  "dependencies": {
-  "@lexical/headless": "^0.33.1",
-  "@lexical/markdown": "^0.33.1",
+  "@lexical/headless": "^0.36.1",
+  "@lexical/markdown": "^0.36.1",
   "@tokenring-ai/ai-client": "0.1.0",
   "@tokenring-ai/blog": "0.1.0",
   "@tokenring-ai/cdn": "0.1.0",
@@ -13,7 +13,7 @@
   "@tryghost/admin-api": "^1.14.0",
   "@tryghost/content-api": "^1.12.0",
   "form-data": "^4.0.4",
-  "uuid": "^11.1.0"
+  "uuid": "^13.0.0"
  },
  "devDependencies": {
   "vitest": "^3.2.4",
