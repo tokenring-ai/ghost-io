@@ -4,11 +4,8 @@ import {UploadOptions, UploadResult} from "@tokenring-ai/cdn/types";
 import GhostAdminAPI from "@tryghost/admin-api";
 import FormData from "form-data";
 import {v4 as uuid} from "uuid";
+import {z} from "zod";
 
-export interface GhostCDNProviderOptions {
-  url: string;
-  apiKey: string;
-}
 
 export default class GhostCDNProvider extends CDNProvider {
   private readonly adminAPI: GhostAdminAPI;
@@ -57,3 +54,8 @@ export default class GhostCDNProvider extends CDNProvider {
     }
   }
 }
+export const GhostCDNProviderOptionsSchema = z.object({
+  url: z.string(),
+  apiKey: z.string(),
+});
+export type GhostCDNProviderOptions = z.infer<typeof GhostCDNProviderOptionsSchema>;

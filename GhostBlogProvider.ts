@@ -1,19 +1,9 @@
 import Agent from "@tokenring-ai/agent/Agent";
-import {
-  BlogPost,
-  BlogProvider,
-  BlogProviderOptions,
-  CreatePostData,
-  UpdatePostData
-} from "@tokenring-ai/blog/BlogProvider";
+import {BlogPost, BlogProvider, CreatePostData, UpdatePostData} from "@tokenring-ai/blog/BlogProvider";
 // @ts-ignore
 import GhostAdminAPI from "@tryghost/admin-api";
+import {z} from "zod";
 import {GhostBlogState} from "./state/GhostBlogState.js";
-
-export interface GhostIOServiceOptions extends BlogProviderOptions{
-  url: string;
-  apiKey: string;
-}
 
 export interface GhostAdminAPI {
   posts: {
@@ -91,7 +81,7 @@ export default class GhostBlogProvider implements BlogProvider {
   /**
    * Creates an instance of GhostIOService
    */
-  constructor({url, apiKey, imageGenerationModel, cdn, description}: GhostIOServiceOptions) {
+  constructor({url, apiKey, imageGenerationModel, cdn, description}: GhostBlogProviderOptions) {
     if (!cdn) {
       throw new Error("Error in Ghost config: No cdn provided");
     }
@@ -236,3 +226,11 @@ export default class GhostBlogProvider implements BlogProvider {
     });
   }
 }
+export const GhostBlogProviderOptionsSchema = z.object({
+  url: z.string(),
+  apiKey: z.string(),
+  imageGenerationModel: z.string(),
+  cdn: z.string(),
+  description: z.string(),
+});
+export type GhostBlogProviderOptions = z.infer<typeof GhostBlogProviderOptionsSchema>;
