@@ -1,6 +1,6 @@
-import {AgentStateSlice} from "@tokenring-ai/agent/Agent";
 import {ResetWhat} from "@tokenring-ai/agent/AgentEvents";
 import {GhostPost} from "../GhostBlogProvider.js";
+import type { AgentStateSlice } from "@tokenring-ai/agent/types";
 
 export class GhostBlogState implements AgentStateSlice {
   name = "GhostBlogState";

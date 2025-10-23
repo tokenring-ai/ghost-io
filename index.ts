@@ -5,7 +5,7 @@ import GhostBlogProvider, {GhostBlogProviderOptionsSchema} from "./GhostBlogProv
 import GhostCDNProvider, {GhostCDNProviderOptionsSchema} from "./GhostCDNProvider.ts";
 import packageJSON from './package.json' with {type: 'json'};
 
-export const packageInfo: TokenRingPackage = {
+export default {
   name: packageJSON.name,
   version: packageJSON.version,
   description: packageJSON.description,
@@ -36,7 +36,7 @@ export const packageInfo: TokenRingPackage = {
       });
     }
   },
-};
+} as TokenRingPackage;
 
 export {default as GhostBlogProvider} from "./GhostBlogProvider.ts";
 export {default as GhostCDNProvider} from "./GhostCDNProvider.ts";
