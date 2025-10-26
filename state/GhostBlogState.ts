@@ -25,4 +25,10 @@ export class GhostBlogState implements AgentStateSlice {
   deserialize(data: any): void {
     this.currentPost = data.currentPost || null;
   }
+
+  show(): string[] {
+    return [
+      `Current Post: ${this.currentPost ? `${this.currentPost.title || 'Untitled'} (ID: ${this.currentPost.id})` : 'None'}`
+    ];
+  }
 }
