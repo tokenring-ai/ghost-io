@@ -1,23 +1,26 @@
 {
  "name": "@tokenring-ai/ghost-io",
- "version": "0.1.0",
+ "version": "0.2.0",
  "description": "Ghost.io integration for Token Ring",
  "dependencies": {
+  "@tokenring-ai/app": "0.2.0",
+  "@tokenring-ai/chat": "0.2.0",
+  "zod": "^4.1.13",
   "@lexical/headless": "^0.38.2",
   "@lexical/markdown": "^0.38.2",
-  "@tokenring-ai/ai-client": "0.1.0",
-  "@tokenring-ai/blog": "0.1.0",
-  "@tokenring-ai/cdn": "0.1.0",
-  "@tokenring-ai/agent": "0.1.0",
-  "@tokenring-ai/filesystem": "0.1.0",
+  "@tokenring-ai/ai-client": "0.2.0",
+  "@tokenring-ai/blog": "0.2.0",
+  "@tokenring-ai/cdn": "0.2.0",
+  "@tokenring-ai/agent": "0.2.0",
+  "@tokenring-ai/filesystem": "0.2.0",
   "@tryghost/admin-api": "^1.14.2",
   "@tryghost/content-api": "^1.12.2",
   "form-data": "^4.0.5",
   "uuid": "^13.0.0"
  },
  "devDependencies": {
-  "vitest": "^4.0.13",
-  "@vitest/coverage-v8": "^4.0.13"
+  "vitest": "^4.0.14",
+  "@vitest/coverage-v8": "^4.0.14"
  },
  "exports": {
   ".": "./index.ts",
