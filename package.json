@@ -5,7 +5,7 @@
   "dependencies": {
     "@tokenring-ai/app": "0.2.0",
     "@tokenring-ai/chat": "0.2.0",
-    "zod": "^4.1.13",
+    "zod": "catalog:",
     "@lexical/headless": "^0.39.0",
     "@lexical/markdown": "^0.39.0",
     "@tokenring-ai/ai-client": "0.2.0",
