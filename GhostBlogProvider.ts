@@ -68,11 +68,6 @@ function GhostPostToBlogPost({id, created_at, updated_at, published_at, feature_
  * It allows for retrieving, creating, updating, and publishing blog posts.
  */
 export default class GhostBlogProvider implements BlogProvider {
-  static sampleArguments = {
-    url: "https://ghost.io",
-    apiKey: "YOUR_ADMIN_API_KEY",
-  };
-
   private readonly adminAPI: GhostAdminAPI;
   description: string;
   cdnName: string;
