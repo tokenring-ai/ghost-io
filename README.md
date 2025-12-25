@@ -169,6 +169,7 @@ interface GhostBlogProvider {
   updatePost(data: UpdatePostData, agent: Agent): Promise<BlogPost>;
   selectPostById(id: string, agent: Agent): Promise<BlogPost>;
   clearCurrentPost(agent: Agent): Promise<void>;
+  publishPost(agent: Agent): Promise<BlogPost>;
 }
 ```
 
