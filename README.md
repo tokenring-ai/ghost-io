@@ -2,181 +2,230 @@
 
 Ghost.io integration package for the Token Ring writer. It provides:
 
-- **GhostBlogProvider** to connect to a Ghost site (Admin + Content APIs)
+- **GhostBlogProvider** to connect to a Ghost site (Admin API)
 - **GhostCDNProvider** for image upload to Ghost CDN
-- State management through **GhostBlogState** for tracking the current post
+- **GhostBlogState** for tracking the current post selection
 - Plugin-based integration for seamless service registration
 
-## What does it do?
+## Overview
 
-This package lets Token Ring agents and the interactive REPL work with your Ghost blog:
+This package lets Token Ring agents work with your Ghost blog:
 
 - Browse and select existing posts as working context
-- Create new draft posts from Markdown content
-- Generate AI images and set them as featured images
+- Create new draft posts from Markdown/HTML content
 - Read and update post details
 - Upload images to Ghost CDN
 
-Internally it wraps the official Ghost Admin and Content SDKs and maintains a `currentPost` state used by tools and chat commands.
+Internally it wraps the official Ghost Admin SDK and maintains a `currentPost` state used by tools and chat commands.
 
-## Installation / Enabling
+## Installation
 
-This package lives in the monorepo and is consumed by the writer app. To add it in a custom Registry setup:
+This package lives in the monorepo and is consumed by the writer app. To add it in a custom setup:
 
 ```ts
-import { GhostBlogProvider, GhostCDNProvider } from "@tokenring-ai/ghost-io";
-import { BlogService, CDNService } from "@tokenring-ai/blog";
-import { CDNService } from "@tokenring-ai/cdn";
+import GhostIoPlugin from "@tokenring-ai/ghost-io";
 import { Registry } from "@tokenring-ai/registry";
 
 const registry = new Registry();
 await registry.start();
 
-// Configure CDN service with Ghost CDN provider
-registry.services.addServices(
-  new CDNService().registerProvider("ghost", new GhostCDNProvider({
-    url: process.env.GHOST_URL!,
-    apiKey: process.env.GHOST_ADMIN_API_KEY!
-  }))
-);
-
-// Configure blog service with Ghost blog provider
-registry.services.addServices(
-  new BlogService().registerBlog("ghost", new GhostBlogProvider({
-    url: process.env.GHOST_URL!,
-    apiKey: process.env.GHOST_ADMIN_API_KEY!,
-    imageGenerationModel: "gpt-image-1",
-    cdn: "ghost",
-    description: "Ghost blog integration"
-  }))
-);
-
-// The package provides plugin-based integration that automatically registers services
-// when the app starts with the correct configuration
+// The plugin handles service registration automatically when configured
 ```
 
-In the Token Ring writer (see `src/tr-writer.ts`), this package is already imported and can be enabled via configuration.
+In the Token Ring writer, this package is already imported and can be enabled via configuration.
 
-## Configuration
+## Plugin Configuration
+
+The plugin is configured through your application config:
+
+```typescript
+const config = {
+  ghost: {
+    cdn: {
+      providers: {
+        "ghost-cdn": {
+          type: "ghost",
+          url: "https://your-ghost-site.ghost.io",
+          apiKey: process.env.GHOST_ADMIN_API_KEY,
+        },
+      },
+    },
+    blog: {
+      providers: {
+        "ghost-blog": {
+          type: "ghost",
+          url: "https://your-ghost-site.ghost.io",
+          apiKey: process.env.GHOST_ADMIN_API_KEY,
+          imageGenerationModel: "gpt-image-1",
+          cdn: "ghost-cdn",
+          description: "My Ghost Blog",
+        },
+      },
+    },
+  },
+};
+```
 
 ### GhostBlogProvider Configuration
 
-GhostBlogProvider requires connection details for your Ghost site:
+GhostBlogProvider requires:
 
-- `url`: string — Your Ghost site URL (e.g., `https://demo.ghost.io`)
-- `apiKey`: string — Admin API key for writes (create/update/publish, image upload)
-- `imageGenerationModel`: string — AI image generation model to use (e.g., `gpt-image-1`)
-- `cdn`: string — CDN provider name configured in the CDN service
-- `description`: string — Human-readable description of the blog
+| Property | Type | Description |
+|----------|------|-------------|
+| `url` | string | Your Ghost site URL (e.g., `https://demo.ghost.io`) |
+| `apiKey` | string | Admin API key for writes (create/update/publish, image upload) |
+| `imageGenerationModel` | string | AI image generation model to use (e.g., `gpt-image-1`) |
+| `cdn` | string | CDN provider name configured in the CDN service |
+| `description` | string | Human-readable description of the blog |
 
 ### GhostCDNProvider Configuration
 
 GhostCDNProvider requires:
 
-- `url`: string — Your Ghost site URL
-- `apiKey`: string — Admin API key
-
-Example environment variables:
-
-```bash
-GHOST_URL=https://your-ghost-site.example
-GHOST_ADMIN_API_KEY=YOUR_ADMIN_KEY
-GHOST_CONTENT_API_KEY=YOUR_CONTENT_API_KEY
-```
-
-Sample arguments exported by the service:
-
-```ts
-GhostBlogProvider.sampleArguments
-// {
-//   url: "https://ghost.io",
-//   apiKey: "YOUR_ADMIN_API_KEY",
-//   imageGenerationModel: "gpt-image-1",
-//   cdn: "ghost",
-//   description: "Ghost blog integration"
-// }
-
-GhostCDNProvider.sampleArguments
-// {
-//   url: "https://ghost.io",
-//   apiKey: "YOUR_ADMIN_API_KEY"
-// }
-```
+| Property | Type | Description |
+|----------|------|-------------|
+| `url` | string | Your Ghost site URL |
+| `apiKey` | string | Admin API key |
 
 ## Package Structure
 
 ```
 pkg/ghost-io/
-├── index.ts              # Main exports
-├── plugin.ts             # Token Ring plugin for auto-registration
-├── GhostBlogProvider.ts  # Blog provider implementation
-├── GhostCDNProvider.ts   # CDN provider implementation
+├── index.ts                 # Main exports
+├── plugin.ts                # Token Ring plugin for auto-registration
+├── GhostBlogProvider.ts     # Blog provider implementation
+├── GhostCDNProvider.ts      # CDN provider implementation
 ├── state/
-│   └── GhostBlogState.ts # State management for current post
-└── tools/               # (Future: tools for agent integration)
+│   └── GhostBlogState.ts    # State management for current post
+└── docs/                    # Ghost API reference documentation
 ```
 
 ## Core Components
 
 ### GhostBlogProvider
 
-GhostBlogProvider provides a typed wrapper over the Ghost SDKs:
-
-- `getCurrentPost(agent: Agent)`: Get the currently selected post
-- `getAllPosts()`: Browse all posts (Admin API)
-- `createPost(data: CreatePostData, agent: Agent)`: Create a new post (Admin API)
-- `updatePost(data: UpdatePostData, agent: Agent)`: Update the selected post (Admin API)
-- `selectPostById(id: string, agent: Agent)`: Fetch and select a post by ID (Content API)
-- `clearCurrentPost(agent: Agent)`: Clear the current post selection
-- `publishPost(agent: Agent)`: Publish the selected post (requires currentPost)
-
-### GhostCDNProvider
-
-GhostCDNProvider handles image uploads:
-
-- `upload(data: Buffer, options?: UploadOptions)`: Upload an image to Ghost CDN
-
-### GhostBlogState
-
-State management for tracking the current post:
-
-- `currentPost`: The currently selected Ghost post (or null)
-- State persistence across chat sessions
-- Automatic reset when chat session ends
-
-## Chat Command
-
-Command: `/ghost`
-
-Usage: `/ghost [post|cdn] [select|info|new]`
-
-- `post select`: Open a tree selector to choose an existing post or clear selection
-- `post info`: Show details about the currently selected post (title, status, dates, tags, URL)
-- `post new`: Clear selection to indicate the next operations should create a new post
-- `cdn upload`: Upload an image to Ghost CDN (requires file selection)
-
-The selection state is stored in `GhostBlogState.currentPost` and is cleared when you choose "Clear selection" or run `/ghost post new`.
-
-## Service API Reference
-
-### GhostBlogProvider Interface
+GhostBlogProvider implements the `BlogProvider` interface and provides a typed wrapper over the Ghost Admin API:
 
 ```typescript
-interface GhostBlogProvider {
+class GhostBlogProvider implements BlogProvider {
+  constructor(options: GhostBlogProviderOptions);
+
+  // State management
+  attach(agent: Agent): Promise<void>;
+
+  // Post operations
   getCurrentPost(agent: Agent): BlogPost | null;
   getAllPosts(): Promise<BlogPost[]>;
   createPost(data: CreatePostData, agent: Agent): Promise<BlogPost>;
   updatePost(data: UpdatePostData, agent: Agent): Promise<BlogPost>;
   selectPostById(id: string, agent: Agent): Promise<BlogPost>;
   clearCurrentPost(agent: Agent): Promise<void>;
-  publishPost(agent: Agent): Promise<BlogPost>;
+}
+```
+
+**Methods:**
+
+- `getCurrentPost(agent)`: Returns the currently selected post from state
+- `getAllPosts()`: Fetches all posts from the Ghost Admin API
+- `createPost(data, agent)`: Creates a new draft post (requires no current post selection)
+- `updatePost(data, agent)`: Updates the currently selected post
+- `selectPostById(id, agent)`: Fetches a post by ID and selects it
+- `clearCurrentPost(agent)`: Clears the current post selection
+
+### GhostCDNProvider
+
+GhostCDNProvider implements the `CDNProvider` interface and handles image uploads:
+
+```typescript
+class GhostCDNProvider extends CDNProvider {
+  constructor(options: GhostCDNProviderOptions);
+
+  upload(data: Buffer, options?: UploadOptions): Promise<UploadResult>;
+}
+```
+
+**Method:**
+
+- `upload(data, options)`: Uploads an image buffer to Ghost CDN, returns the uploaded URL
+
+### GhostBlogState
+
+GhostBlogState implements the `AgentStateSlice` interface for state management:
+
+```typescript
+class GhostBlogState implements AgentStateSlice {
+  name: "GhostBlogState";
+  currentPost: GhostPost | null;
+
+  reset(what: ResetWhat[]): void;
+  serialize(): object;
+  deserialize(data: any): void;
+  show(): string[];
+}
+```
+
+## Type Definitions
+
+### GhostBlogProviderOptions
+
+```typescript
+export type GhostBlogProviderOptions = {
+  url: string;
+  apiKey: string;
+  imageGenerationModel: string;
+  cdn: string;
+  description: string;
+};
+```
+
+### GhostCDNProviderOptions
+
+```typescript
+export type GhostCDNProviderOptions = {
+  url: string;
+  apiKey: string;
+};
+```
+
+### GhostPost
+
+```typescript
+export interface GhostPost {
+  id: string;
+  title: string;
+  content?: string;
+  html?: string;
+  status: 'draft' | 'published' | 'scheduled';
+  tags?: string[];
+  created_at: string;
+  updated_at: string;
+  published_at?: string;
+  feature_image?: string;
+  excerpt?: string;
+  url?: string;
+  slug?: string;
+}
+```
+
+### BlogPost
+
+```typescript
+export interface BlogPost {
+  id: string;
+  title: string;
+  content: string;
+  status: 'draft' | 'published' | 'scheduled';
+  created_at: Date;
+  updated_at: Date;
+  published_at: Date;
+  feature_image?: { url: string };
 }
 ```
 
 ### CreatePostData
 
 ```typescript
-interface CreatePostData {
+export interface CreatePostData {
   title: string;
   content: string;
   tags?: string[];
@@ -187,7 +236,7 @@ interface CreatePostData {
 ### UpdatePostData
 
 ```typescript
-interface UpdatePostData {
+export interface UpdatePostData {
   title?: string;
   content?: string;
   tags?: string[];
@@ -196,28 +245,23 @@ interface UpdatePostData {
 }
 ```
 
-### GhostCDNProvider Interface
+## Usage Examples
+
+### Example: Creating a Draft Post
 
 ```typescript
-interface GhostCDNProvider {
-  upload(data: Buffer, options?: UploadOptions): Promise<UploadResult>;
-}
-```
-
-## Example: Creating a draft from Markdown
-
-```ts
 import { GhostBlogProvider } from "@tokenring-ai/ghost-io";
+import type { Agent } from "@tokenring-ai/agent";
 
 const provider = new GhostBlogProvider({
   url: "https://your-ghost-site.com",
   apiKey: "your-admin-api-key",
   imageGenerationModel: "gpt-image-1",
-  cdn: "ghost",
+  cdn: "ghost-cdn",
   description: "My Ghost Blog"
 });
 
-// Create a new post
+// Create a new post (agent required for state management)
 const newPost = await provider.createPost({
   title: "Hello Ghost from Token Ring",
   content: "# Heading\n\nThis was written by an agent.",
@@ -227,9 +271,9 @@ const newPost = await provider.createPost({
 console.log("Created post:", newPost.id, newPost.title);
 ```
 
-## Example: Uploading an image to CDN
+### Example: Uploading an Image to CDN
 
-```ts
+```typescript
 import { GhostCDNProvider } from "@tokenring-ai/ghost-io";
 
 const provider = new GhostCDNProvider({
@@ -241,23 +285,22 @@ const provider = new GhostCDNProvider({
 const imageBuffer = Buffer.from("image-data", "binary");
 
 const result = await provider.upload(imageBuffer, {
-  filename: "featured-image.jpg",
-  purpose: "image"
+  filename: "featured-image.jpg"
 });
 
 console.log("Uploaded to:", result.url);
 ```
 
-## Example: Selecting and updating a post
+### Example: Selecting and Updating a Post
 
-```ts
+```typescript
 import { GhostBlogProvider } from "@tokenring-ai/ghost-io";
 
 const provider = new GhostBlogProvider({
   url: "https://your-ghost-site.com",
   apiKey: "your-admin-api-key",
   imageGenerationModel: "gpt-image-1",
-  cdn: "ghost",
+  cdn: "ghost-cdn",
   description: "My Ghost Blog"
 });
 
@@ -279,50 +322,47 @@ console.log("Updated post:", updatedPost.title);
 
 The package integrates with the Token Ring agent system through:
 
-1. **State Management**: `GhostBlogState` tracks the current post selection
-2. **Plugin Architecture**: Automatically registers services when the app starts
-3. **Service Registry**: Services are registered with the application framework via plugins
+1. **State Management**: `GhostBlogState` tracks the current post selection via `agent.getState(GhostBlogState)`
+2. **Plugin Architecture**: Automatically registers providers when the app starts with the correct configuration
+3. **Service Registry**: Providers are registered with `BlogService` and `CDNService` via `app.services.waitForItemByType()`
 
-## Dependencies
+### State Lifecycle
 
-This package depends on:
+The `GhostBlogState` is reset when:
 
-- `@tokenring-ai/app`: Base application framework
-- `@tokenring-ai/blog`: Blog service abstraction
-- `@tokenring-ai/cdn`: CDN service abstraction
-- `@tokenring-ai/agent`: Agent system
-- `@tryghost/admin-api`: Official Ghost Admin API client
-- `@tryghost/content-api`: Official Ghost Content API client
-- `form-data`: For image uploads
-- `uuid`: For generating unique filenames
+- Chat session ends (`what.includes('chat')`)
+- User explicitly clears the selection
 
 ## Development
 
 ### Testing
 
-Run tests with:
-
 ```bash
+# Run all tests
 bun run test
+
+# Run tests in watch mode
 bun run test:watch
+
+# Run tests with coverage
 bun run test:coverage
 ```
 
 ### Building
 
-Build the package with:
-
 ```bash
+# Type check the package
 bun run build
 ```
 
 ## Notes and Caveats
 
-- You must configure both Admin and Content API keys.
-- Some operations rely on `currentPost`; use `selectPostById` or the `/ghost post select` command to set context.
-- The package provides two distinct providers: `GhostBlogProvider` for blog posts and `GhostCDNProvider` for image uploads.
-- Ensure your Ghost site is running Ghost 5.0+ for full API compatibility.
+- GhostBlogProvider only uses the Admin API (not Content API) for all operations
+- Some operations rely on `currentPost`; use `selectPostById` to set context before updating
+- The package provides two distinct providers: `GhostBlogProvider` for blog posts and `GhostCDNProvider` for image uploads
+- Ensure your Ghost site is running Ghost 5.0+ for full API compatibility
+- The `imageGenerationModel` configures which AI model to use for generating featured images
 
 ## License
 
-MIT (see repository LICENSE)
+MIT License - see [LICENSE](./LICENSE) file for details.
