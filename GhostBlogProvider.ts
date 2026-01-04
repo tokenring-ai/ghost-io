@@ -112,7 +112,7 @@ export default class GhostBlogProvider implements BlogProvider {
     });
   }
 
-  async attach(agent: Agent): Promise<void> {
+  attach(agent: Agent): void {
     agent.initializeState(GhostBlogState, {});
   }
 
