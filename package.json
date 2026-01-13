@@ -13,14 +13,14 @@
     "@tokenring-ai/cdn": "0.2.0",
     "@tokenring-ai/agent": "0.2.0",
     "@tokenring-ai/filesystem": "0.2.0",
-    "@tryghost/admin-api": "^1.14.3",
-    "@tryghost/content-api": "^1.12.2",
+    "@tryghost/admin-api": "^1.14.4",
+    "@tryghost/content-api": "^1.12.3",
     "form-data": "^4.0.5",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
     "vitest": "catalog:",
-    "@vitest/coverage-v8": "^4.0.16",
+    "@vitest/coverage-v8": "^4.0.17",
     "typescript": "catalog:"
   },
   "exports": {
