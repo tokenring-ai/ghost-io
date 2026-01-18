@@ -6,7 +6,6 @@ import FormData from "form-data";
 import {v4 as uuid} from "uuid";
 import {z} from "zod";
 
-
 export default class GhostCDNProvider extends CDNProvider {
   private readonly adminAPI: GhostAdminAPI;
 
