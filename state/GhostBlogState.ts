@@ -1,9 +1,15 @@
 import {ResetWhat} from "@tokenring-ai/agent/AgentEvents";
 import type {AgentStateSlice} from "@tokenring-ai/agent/types";
+import {z} from "zod";
 import {GhostPost} from "../GhostBlogProvider.js";
 
-export class GhostBlogState implements AgentStateSlice {
+const serializationSchema = z.object({
+  currentPost: z.any().nullable()
+});
+
+export class GhostBlogState implements AgentStateSlice<typeof serializationSchema> {
   name = "GhostBlogState";
+  serializationSchema = serializationSchema;
   currentPost: GhostPost | null;
 
   constructor({currentPost}: { currentPost?: GhostPost | null } = {}) {
@@ -16,14 +22,14 @@ export class GhostBlogState implements AgentStateSlice {
     }
   }
 
-  serialize(): object {
+  serialize(): z.output<typeof serializationSchema> {
     return {
       currentPost: this.currentPost,
     };
   }
 
-  deserialize(data: any): void {
-    this.currentPost = data.currentPost || null;
+  deserialize(data: z.output<typeof serializationSchema>): void {
+    this.currentPost = data.currentPost;
   }
 
   show(): string[] {
