@@ -12,29 +12,22 @@ export default class GhostCDNProvider extends CDNProvider {
   /**
    * Creates an instance of GhostIOService
    */
-  constructor({url, apiKey}: GhostCDNProviderOptions) {
+  constructor(private options: GhostCDNProviderOptions) {
     super();
 
-    if (!url) {
-      throw new Error("Error in Ghost config: No url provided");
-    }
-
-    if (!apiKey) {
-      throw new Error("Error in Ghost configuration: apiKey not provided");
-    }
 
     this.adminAPI = new GhostAdminAPI({
       // Ghost Admin API client
-      url,
+      url: options.url,
       version: "v5.0",
-      key: apiKey,
+      key: options.apiKey,
     });
   }
 
 
   async upload(data: Buffer, options?: UploadOptions): Promise<UploadResult> {
     const filename = options?.filename || `${uuid()}.jpg`;
-    
+
     const formData = new FormData();
     formData.append("file", data, {filename});
     formData.append("purpose", "image");

@@ -69,46 +69,23 @@ function GhostPostToBlogPost({id, created_at, updated_at, published_at, feature_
  */
 export default class GhostBlogProvider implements BlogProvider {
   private readonly adminAPI: GhostAdminAPI;
-  description: string;
-  cdnName: string;
-  imageGenerationModel: string;
+  readonly description: string;
+  readonly cdnName: string;
+  readonly imageGenerationModel: string;
 
   /**
    * Creates an instance of GhostIOService
    */
-  constructor({url, apiKey, imageGenerationModel, cdn, description}: GhostBlogProviderOptions) {
-    if (!cdn) {
-      throw new Error("Error in Ghost config: No cdn provided");
-    }
-    this.cdnName = cdn;
-
-    if (!imageGenerationModel) {
-      throw new Error("Error in Ghost config: No imageGenerationModel provided");
-    }
-    this.imageGenerationModel = imageGenerationModel;
-
-    if (!description) {
-      throw new Error("Error in Ghost config: No description provided");
-    }
-    this.description = description;
-
-    if (!url) {
-      throw new Error("Error in Ghost config: No url provided");
-    }
-
-    if (!apiKey) {
-      throw new Error("Error in Ghost configuration: apiKey not provided");
-    }
-
-    if (!cdn) {
-      throw new Error("Error in Ghost configuration: cdn not provided");
-    }
+  constructor(readonly options: GhostBlogProviderOptions) {
+    this.cdnName = options.cdn;
+    this.imageGenerationModel = options.imageGenerationModel;
+    this.description = options.description;
 
     this.adminAPI = new GhostAdminAPI({
       // Ghost Admin API client
-      url,
+      url: options.url,
       version: "v5.0",
-      key: apiKey,
+      key: options.apiKey,
     });
   }
 
