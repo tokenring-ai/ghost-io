@@ -539,16 +539,16 @@ The package integrates with the Token Ring agent system through:
 - `@tokenring-ai/blog`: Blog service interface and provider system
 - `@tokenring-ai/cdn`: CDN service interface and provider system
 - `@tokenring-ai/agent`: Agent system and state management
-- `@tokenring-ai/chat`: Chat interface for tools
-- `@tokenring-ai/ai-client`: AI client for content generation
-- `@tokenring-ai/filesystem`: File system operations
 - `@tryghost/admin-api`: Official Ghost Admin SDK
 - `zod`: Runtime type validation
-
-### Optional Dependencies
-
 - `form-data`: Used for image upload with Ghost API
 - `uuid`: Generates unique filenames for uploads
+
+### Development Dependencies
+
+- `vitest`: Unit testing framework
+- `@vitest/coverage-v8`: Code coverage reporting
+- `typescript`: Type definitions
 
 ## Testing
 
