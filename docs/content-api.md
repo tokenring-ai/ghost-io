@@ -559,7 +559,7 @@ property - a path representing the field to filter on
 operator (optional) - how to compare values (: on its own is roughly =)
 value - the value to match against
 Property
-Matches: [a-zA-Z_][a-zA-Z0-9_.]
+Matches: ```[a-zA-Z_][a-zA-Z0-9_.]```
 
 can contain only alpha-numeric characters and _
 cannot contain whitespace

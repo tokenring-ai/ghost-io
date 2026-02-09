@@ -8,7 +8,7 @@ const serializationSchema = z.object({
 });
 
 export class GhostBlogState implements AgentStateSlice<typeof serializationSchema> {
-  name = "GhostBlogState";
+  readonly name = "GhostBlogState";
   serializationSchema = serializationSchema;
   currentPost: GhostPost | null;
 
