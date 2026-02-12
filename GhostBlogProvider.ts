@@ -1,5 +1,5 @@
 import Agent from "@tokenring-ai/agent/Agent";
-import {BlogPost, BlogProvider, CreatePostData, UpdatePostData} from "@tokenring-ai/blog/BlogProvider";
+import {BlogPost, BlogPostFilterOptions, BlogProvider, CreatePostData, UpdatePostData} from "@tokenring-ai/blog/BlogProvider";
 // @ts-ignore
 import GhostAdminAPI from "@tryghost/admin-api";
 import {z} from "zod";
@@ -110,6 +110,21 @@ export default class GhostBlogProvider implements BlogProvider {
 
     // Ensure all posts conform to the GhostPost interface
     return posts.map(GhostPostToBlogPost);
+  }
+
+  /**
+   * Fetches recent posts from the Ghost.io API with optional filtering
+   */
+  async getRecentPosts(filter: BlogPostFilterOptions, agent: Agent): Promise<BlogPost[]> {
+    let filterStrings: string[] = [];
+    if (filter.keyword) filterStrings.push(`(title:~${filter.keyword},html:~${filter.keyword})`);
+    if (filter.status) filterStrings.push(`status:${filter.status}`);
+
+    const filterString = filterStrings.join("+");
+    return await this.adminAPI.posts.browse({
+      limit: filter.limit || "all",
+      filter: filterString || undefined
+    }).map(GhostPostToBlogPost);
   }
 
   /**
