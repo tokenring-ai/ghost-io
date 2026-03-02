@@ -29,12 +29,13 @@ bun add @tokenring-ai/ghost-io
 
 ## Features
 
-- Ghost Admin API integration for blog post management
+- Ghost Admin API v5.0 integration for blog post management
 - Image upload to Ghost CDN
 - Post filtering and search by keyword and status
 - Agent state management for tracking current post selection
 - Automatic conversion between Ghost and Token Ring data structures
 - Plugin-based architecture for easy integration with Token Ring applications
+- Support for draft, published, and scheduled post statuses
 
 ## Core Components/API
 
@@ -72,9 +73,9 @@ Parameters:
 
 - `getCurrentPost(agent)`: Returns the currently selected post from `GhostBlogState`. Returns `null` if no post is selected.
 
-- `getAllPosts()`: Fetches **all** posts from Ghost Admin API. Does not require an active post selection. Returns an array of all published posts converted from Ghost's native format.
+- `getAllPosts()`: Fetches **all** posts from Ghost Admin API. Does not require an active post selection. Returns an array of all posts converted from Ghost's native format.
 
-- `getRecentPosts(filter, agent)`: Fetches recent posts with filtering options. Supports keyword search across title and content, and filtering by status. Returns posts converted from Ghost's native format.
+- `getRecentPosts(filter, agent)`: Fetches recent posts with filtering options. Supports keyword search across title and html content, and filtering by status. Returns posts converted from Ghost's native format.
 
 - `createPost(data, agent)`: Creates a new draft post. **Requires** calling `attach()` first with the agent. Cannot be called when a post is already selected.
 
@@ -104,7 +105,7 @@ Parameters:
 
 **Method:**
 
-- `upload(data, options)`: **Required** to upload images to Ghost. Takes a Buffer containing the image data and optional filename/metadata. Returns an object with the uploaded `url` and `id`. Uses Ghost Admin API's image upload endpoint with FormData.
+- `upload(data, options)`: **Required** to upload images to Ghost. Takes a Buffer containing the image data and optional filename/metadata. Returns an object with the uploaded `url` and `id`. Uses Ghost Admin API's image upload endpoint with FormData. Automatically generates a unique filename using UUID if not provided.
 
 ### GhostBlogState
 
@@ -121,6 +122,12 @@ GhostBlogState implements the `AgentStateSlice` interface for per-agent state ma
 - `getCurrentPost(agent)`: Access external client via `agent.getState(GhostBlogState)` or `provider.getCurrentPost(agent)`
 
 - `reset(what)`: Resets state when chat ends or explicitly by calling `clearCurrentPost(agent)`
+
+- `serialize()`: Serializes state for persistence
+
+- `deserialize(data)`: Deserializes state from persisted data
+
+- `show()`: Returns a string representation of the current state
 
 ## Configuration
 
@@ -272,6 +279,14 @@ interface GhostPost {
 }
 ```
 
+**Data Conversion**
+
+The `GhostPostToBlogPost` function converts Ghost posts to Token Ring's `BlogPost` format:
+
+- Uses `content` field if available, otherwise falls back to `html`
+- Converts date strings to Date objects
+- Requires `id`, `title`, and `status` fields (throws error if missing)
+
 ### GhostCDNProvider
 
 GhostCDNProvider extends the `CDNProvider` interface and handles image uploads to Ghost CDN.
@@ -297,6 +312,12 @@ GhostBlogState implements the `AgentStateSlice` interface for per-agent state ma
 - `getCurrentPost(agent)`: Access external client via `agent.getState(GhostBlogState)` or `provider.getCurrentPost(agent)`
 
 - `reset(what)`: Resets state when chat ends or explicitly by calling `clearCurrentPost(agent)`
+
+- `serialize()`: Serializes state for persistence
+
+- `deserialize(data)`: Deserializes state from persisted data
+
+- `show()`: Returns a string representation of the current state
 
 **State Schema**
 
