@@ -56,6 +56,12 @@ Parameters:
 - `options.cdn`: Name of the CDN provider to use (must match CDN provider name)
 - `options.description`: Human-readable description of the blog
 
+**Properties**
+
+- `description`: Human-readable description of the blog
+- `cdnName`: Name of the CDN provider to use
+- `imageGenerationModel`: AI image generation model to use
+
 **Methods**
 
 - `attach(agent: Agent): void` - Attaches the provider to an agent and initializes state management
@@ -117,17 +123,21 @@ GhostBlogState implements the `AgentStateSlice` interface for per-agent state ma
 
 **Methods:**
 
-- `attach(agent)`: Called automatically during plugin installation. Initializes `GhostBlogState` for the agent.
-
-- `getCurrentPost(agent)`: Access external client via `agent.getState(GhostBlogState)` or `provider.getCurrentPost(agent)`
-
-- `reset(what)`: Resets state when chat ends or explicitly by calling `clearCurrentPost(agent)`
+- `reset()`: Resets state by clearing the current post selection
 
 - `serialize()`: Serializes state for persistence
 
 - `deserialize(data)`: Deserializes state from persisted data
 
 - `show()`: Returns a string representation of the current state
+
+**State Schema**
+
+```typescript
+const serializationSchema = z.object({
+  currentPost: z.any().nullable()
+});
+```
 
 ## Configuration
 
@@ -307,11 +317,7 @@ GhostBlogState implements the `AgentStateSlice` interface for per-agent state ma
 
 **Methods:**
 
-- `attach(agent)`: Called automatically during plugin installation. Initializes `GhostBlogState` for the agent.
-
-- `getCurrentPost(agent)`: Access external client via `agent.getState(GhostBlogState)` or `provider.getCurrentPost(agent)`
-
-- `reset(what)`: Resets state when chat ends or explicitly by calling `clearCurrentPost(agent)`
+- `reset()`: Resets state by clearing the current post selection
 
 - `serialize()`: Serializes state for persistence
 
@@ -331,7 +337,7 @@ const serializationSchema = z.object({
 
 - **Initialization**: Created when `attach(agent)` is called
 - **Persistence**: Serialized/deserialized across agent sessions
-- **Reset**: Cleared when chat ends (chat reset)
+- **Reset**: Cleared when calling `reset()` or `clearCurrentPost(agent)`
 - **Inheritance**: Child agents inherit parent's `currentPost` selection
 
 ### State Access
@@ -353,8 +359,8 @@ agent.mutateState(GhostBlogState, (state) => {
 const data = state.serialize();
 const newState = new GhostBlogState(data);
 
-// Reset on chat end
-state.reset(['chat']);
+// Reset state
+state.reset();
 ```
 
 ## Dependencies
@@ -366,12 +372,9 @@ state.reset(['chat']);
 - `@tokenring-ai/cdn`: CDN service interface and provider system
 - `@tokenring-ai/agent`: Agent system and state management
 - `@tryghost/admin-api`: Official Ghost Admin SDK
-- `@tryghost/content-api`: Official Ghost Content SDK
-- `@lexical/headless`: Lexical editor integration
-- `@lexical/markdown`: Markdown content format
-- `zod`: Runtime type validation
 - `form-data`: Used for image upload with Ghost API
 - `uuid`: Generates unique filenames for uploads
+- `zod`: Runtime type validation
 
 ### Development Dependencies
 
@@ -511,6 +514,34 @@ console.log(`Found ${recentPosts.length} posts matching "tokenring":`);
 recentPosts.forEach(post => {
   console.log(`- ${post.title} (ID: ${post.id})`);
 });
+```
+
+## Error Handling
+
+### Common Errors
+
+- **Post Selection Errors**: When calling `createPost()` with a post already selected, or `updatePost()` without a selected post
+- **API Errors**: Authentication or connection errors from the Ghost Admin API
+- **Conversion Errors**: Missing required fields (`id`, `title`, `status`) when converting Ghost posts to BlogPost format
+- **Status Errors**: Attempting to set `status: 'pending'` or `status: 'private'` which Ghost does not support
+
+### Error Handling Example
+
+```typescript
+try {
+  const post = await provider.updatePost({
+    title: "New Title",
+    status: "pending" // This will throw an error
+  }, agent);
+} catch (error) {
+  if (error.message.includes("Ghost does not support pending or private posts")) {
+    console.log("Use 'draft' or 'published' status instead");
+  } else if (error.message.includes("No post is currently selected")) {
+    console.log("Select a post first using selectPostById()");
+  } else {
+    console.error("Unexpected error:", error.message);
+  }
+}
 ```
 
 ## Testing

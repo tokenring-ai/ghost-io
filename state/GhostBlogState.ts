@@ -1,5 +1,4 @@
-import {ResetWhat} from "@tokenring-ai/agent/AgentEvents";
-import type {AgentStateSlice} from "@tokenring-ai/agent/types";
+import {AgentStateSlice} from "@tokenring-ai/agent/types";
 import {z} from "zod";
 import {GhostPost} from "../GhostBlogProvider.js";
 
@@ -7,19 +6,16 @@ const serializationSchema = z.object({
   currentPost: z.any().nullable()
 });
 
-export class GhostBlogState implements AgentStateSlice<typeof serializationSchema> {
-  readonly name = "GhostBlogState";
-  serializationSchema = serializationSchema;
+export class GhostBlogState extends AgentStateSlice<typeof serializationSchema> {
   currentPost: GhostPost | null;
 
   constructor({currentPost}: { currentPost?: GhostPost | null } = {}) {
+    super("GhostBlogState",serializationSchema);
     this.currentPost = currentPost || null;
   }
 
-  reset(what: ResetWhat[]): void {
-    if (what.includes('chat')) {
-      this.currentPost = null;
-    }
+  reset(): void {
+          this.currentPost = null;
   }
 
   serialize(): z.output<typeof serializationSchema> {
