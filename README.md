@@ -75,7 +75,7 @@ Parameters:
 
 **Important Methods:**
 
-- `attach(agent)`: **Required** before using any methods. Initializes state management and attaches to the agent. Must be called before calling createPost, updatePost, selectPostById, getCurrentPost, or clearCurrentPost.
+- `attach(agent)`: **Required** before using any methods that interact with agent state. Initializes state management and attaches to the agent. Must be called before calling `createPost`, `updatePost`, `selectPostById`, `getCurrentPost`, or `clearCurrentPost`.
 
 - `getCurrentPost(agent)`: Returns the currently selected post from `GhostBlogState`. Returns `null` if no post is selected.
 
@@ -232,12 +232,6 @@ GhostCDNProvider requires the following properties:
 | `url` | string | Your Ghost site URL |
 | `apiKey` | string | Admin API key for image upload operations |
 
-## Agent Configuration
-
-If any services have an `attach(agent: Agent)` method that merges in an agent config schema, describe the configuration options and schemas for the agent here.
-
-For GhostBlogProvider, the agent configuration happens through the `attach(agent)` method which initializes `GhostBlogState` for the agent.
-
 ## Tools
 
 This package does not provide any tools directly. It provides provider classes (`GhostBlogProvider`, `GhostCDNProvider`) that are registered with the Token Ring services.
@@ -375,6 +369,10 @@ state.reset();
 - `form-data`: Used for image upload with Ghost API
 - `uuid`: Generates unique filenames for uploads
 - `zod`: Runtime type validation
+- `@lexical/headless`: Lexical headless mode for content processing
+- `@lexical/markdown`: Markdown conversion for Lexical content
+- `@tokenring-ai/ai-client`: AI client integration
+- `@tokenring-ai/chat`: Chat command system
 
 ### Development Dependencies
 
