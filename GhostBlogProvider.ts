@@ -3,7 +3,7 @@ import {BlogPost, BlogPostFilterOptions, BlogProvider, CreatePostData, UpdatePos
 // @ts-ignore
 import GhostAdminAPI from "@tryghost/admin-api";
 import {z} from "zod";
-import {GhostBlogState} from "./state/GhostBlogState.js";
+import {GhostBlogState} from "./state/GhostBlogState.ts";
 
 export interface GhostAdminAPI {
   posts: {
@@ -38,13 +38,13 @@ export interface GhostPost {
 
 function GhostPostToBlogPost({id, created_at, updated_at, published_at, feature_image, title, content, html, status}: Partial<GhostPost>): BlogPost {
   if (! id) {
-    throw new Error("Cannot convert WPPost to BlogPost: Missing required field: id");
+    throw new Error("Cannot convert GhostPost to BlogPost: Missing required field: id");
   }
   if (! title) {
-    throw new Error("Cannot convert WPPost to BlogPost: Missing required field: title");
+    throw new Error("Cannot convert GhostPost to BlogPost: Missing required field: title");
   }
   if (! status) {
-    throw new Error("Cannot convert WPPost to BlogPost: Missing required field: status");
+    throw new Error("Cannot convert GhostPost to BlogPost: Missing required field: status");
   }
 
   const now = new Date();

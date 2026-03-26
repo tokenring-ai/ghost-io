@@ -1,6 +1,6 @@
 import {AgentStateSlice} from "@tokenring-ai/agent/types";
 import {z} from "zod";
-import {GhostPost} from "../GhostBlogProvider.js";
+import {GhostPost} from "../GhostBlogProvider.ts";
 
 const serializationSchema = z.object({
   currentPost: z.any().nullable()

@@ -2,22 +2,25 @@
 
 ## Overview
 
-Ghost.io integration package for the Token Ring framework. This package provides:
+Ghost.io integration package for the Token Ring framework. This package provides seamless integration with Ghost.io publishing platforms for AI-powered blog post management and content creation.
 
-- **GhostBlogProvider** to connect to a Ghost site via Admin API (BlogProvider interface)
-- **GhostCDNProvider** for image upload to Ghost CDN (CDNProvider interface)
-- **GhostBlogState** for tracking the current post selection
-- Plugin-based integration for seamless service registration with BlogService and CDNService
+This package exports:
+- **GhostBlogProvider**: Connects to Ghost Admin API for post CRUD operations (implements BlogProvider interface)
+- **GhostCDNProvider**: Handles image uploads to Ghost CDN (implements CDNProvider interface)
+- **GhostBlogState**: Per-agent state management for tracking current post selection
+- **Plugin**: Automatic service registration with BlogService and CDNService
 
-This package lets Token Ring agents work with your Ghost blog:
+## Key Features
 
-- Browse and select existing posts as working context
-- Create new draft posts from Markdown/HTML content
-- Read and update post details
-- Upload images to Ghost CDN
-- Filter and search posts by keyword and status
-
-**Key Implementation Note**: This package does not export service classes directly. Instead, it exports provider classes (`GhostBlogProvider`, `GhostCDNProvider`) that are registered with the BlogService and CDNService at runtime via the plugin system.
+- Ghost Admin API v5.0 integration for blog post management
+- Ghost Content API support for reading published posts
+- Image upload to Ghost CDN with automatic filename generation
+- Post filtering and search by keyword and status
+- Agent state management for tracking current post selection
+- Automatic conversion between Ghost and Token Ring data structures
+- Plugin-based architecture for seamless integration with Token Ring applications
+- Support for draft, published, and scheduled post statuses
+- Lexical/HTML content format support with Markdown conversion
 
 ## Installation
 
@@ -26,16 +29,6 @@ Add the package to your project:
 ```bash
 bun add @tokenring-ai/ghost-io
 ```
-
-## Features
-
-- Ghost Admin API v5.0 integration for blog post management
-- Image upload to Ghost CDN
-- Post filtering and search by keyword and status
-- Agent state management for tracking current post selection
-- Automatic conversion between Ghost and Token Ring data structures
-- Plugin-based architecture for easy integration with Token Ring applications
-- Support for draft, published, and scheduled post statuses
 
 ## Core Components/API
 
@@ -73,7 +66,7 @@ Parameters:
 - `selectPostById(id: string, agent: Agent): Promise<BlogPost>` - Selects a post by ID
 - `clearCurrentPost(agent: Agent): Promise<void>` - Clears the current post selection from state
 
-**Important Methods:**
+**Important Method Usage:**
 
 - `attach(agent)`: **Required** before using any methods that interact with agent state. Initializes state management and attaches to the agent. Must be called before calling `createPost`, `updatePost`, `selectPostById`, `getCurrentPost`, or `clearCurrentPost`.
 
@@ -109,9 +102,9 @@ Parameters:
 
 - `upload(data: Buffer, options?: UploadOptions): Promise<UploadResult>` - Uploads an image buffer to Ghost CDN
 
-**Method:**
+**Method Details:**
 
-- `upload(data, options)`: **Required** to upload images to Ghost. Takes a Buffer containing the image data and optional filename/metadata. Returns an object with the uploaded `url` and `id`. Uses Ghost Admin API's image upload endpoint with FormData. Automatically generates a unique filename using UUID if not provided.
+- `upload(data, options)`: Uploads an image to Ghost CDN. Takes a Buffer containing the image data and optional filename/metadata. Returns an object with the uploaded `url` and `id`. Uses Ghost Admin API's image upload endpoint with FormData. Automatically generates a unique filename using UUID if not provided.
 
 ### GhostBlogState
 
@@ -124,11 +117,8 @@ GhostBlogState implements the `AgentStateSlice` interface for per-agent state ma
 **Methods:**
 
 - `reset()`: Resets state by clearing the current post selection
-
 - `serialize()`: Serializes state for persistence
-
 - `deserialize(data)`: Deserializes state from persisted data
-
 - `show()`: Returns a string representation of the current state
 
 **State Schema**
@@ -234,7 +224,7 @@ GhostCDNProvider requires the following properties:
 
 ## Tools
 
-This package does not provide any tools directly. It provides provider classes (`GhostBlogProvider`, `GhostCDNProvider`) that are registered with the Token Ring services.
+This package does not provide any tools directly. It provides provider classes (`GhostBlogProvider`, `GhostCDNProvider`) that are registered with the Token Ring services (BlogService and CDNService) via the plugin system.
 
 ## Services
 
@@ -312,11 +302,8 @@ GhostBlogState implements the `AgentStateSlice` interface for per-agent state ma
 **Methods:**
 
 - `reset()`: Resets state by clearing the current post selection
-
 - `serialize()`: Serializes state for persistence
-
 - `deserialize(data)`: Deserializes state from persisted data
-
 - `show()`: Returns a string representation of the current state
 
 **State Schema**
@@ -382,7 +369,7 @@ state.reset();
 
 ## Usage Examples
 
-### Accessing the GhostBlogService
+### Accessing the BlogService
 
 After configuration, the GhostBlogProvider is registered with the BlogService. Agents can access it through the service:
 
@@ -407,7 +394,7 @@ import type { BlogService } from "@tokenring-ai/blog";
 const blogService = agent.requireServiceByType(BlogService);
 const provider = blogService.getCurrentProvider();
 
-// Create a new post (requires attach() to be called on provider with agent)
+// Attach provider to agent first (required before state operations)
 await provider.attach(agent);
 
 // Create a new post
