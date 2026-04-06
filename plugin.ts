@@ -1,42 +1,65 @@
 import {TokenRingPlugin} from "@tokenring-ai/app";
-import {BlogConfigSchema, BlogService} from "@tokenring-ai/blog";
-import {CDNConfigSchema, CDNService} from "@tokenring-ai/cdn";
+import {BlogService} from "@tokenring-ai/blog";
+import {CDNService} from "@tokenring-ai/cdn";
 import {z} from "zod";
-import GhostBlogProvider, {GhostBlogProviderOptionsSchema} from "./GhostBlogProvider.ts";
-import GhostCDNProvider, {GhostCDNProviderOptionsSchema} from "./GhostCDNProvider.ts";
-import packageJSON from './package.json' with {type: 'json'};
+import GhostBlogProvider from "./GhostBlogProvider.ts";
+import GhostCDNProvider from "./GhostCDNProvider.ts";
+import packageJSON from "./package.json" with {type: "json"};
+import {GhostConfigSchema, type GhostAccount} from "./schema.ts";
 
 const packageConfigSchema = z.object({
-  cdn: CDNConfigSchema.optional(),
-  blog: BlogConfigSchema.optional(),
+  ghost: GhostConfigSchema.prefault({accounts: {}}),
 });
+
+function addAccountsFromEnv(accounts: Record<string, Partial<GhostAccount>>) {
+  for (const [key, value] of Object.entries(process.env)) {
+    const match = key.match(/^GHOST_URL(\d*)$/);
+    if (!match || !value) continue;
+    const n = match[1];
+    const apiKey = process.env[`GHOST_API_KEY${n}`];
+    if (!apiKey) continue;
+    const name = process.env[`GHOST_ACCOUNT_NAME${n}`] ?? new URL(value).host;
+    accounts[name] = {
+      url: value,
+      apiKey,
+      blog: {
+        description: process.env[`GHOST_DESCRIPTION${n}`] ?? `Ghost.io (${name})`,
+        imageGenerationModel: process.env[`GHOST_IMAGE_MODEL${n}`] ?? "gpt-image-1",
+        cdn: process.env[`GHOST_BLOG_CDN${n}`] ?? name,
+      },
+      cdn: {}
+    };
+  }
+}
 
 export default {
   name: packageJSON.name,
+  displayName: "Ghost.io Integration",
   version: packageJSON.version,
   description: packageJSON.description,
   install(app, config) {
-    if (config.cdn) {
-      app.services.waitForItemByType(CDNService, cdnService => {
-        for (const name in config.cdn!.providers) {
-          const provider = config.cdn!.providers[name];
-          if (provider.type === "ghost") {
-            cdnService.registerProvider(name, new GhostCDNProvider(GhostCDNProviderOptionsSchema.parse(provider)));
-          }
-        }
-      });
-    }
+    addAccountsFromEnv(config.ghost.accounts);
+    //console.log("Ghost accounts:", config.ghost.accounts);
 
-    if (config.blog) {
-      app.services.waitForItemByType(BlogService, blogService => {
-        for (const name in config.blog!.providers) {
-          const provider = config.blog!.providers[name];
-          if (provider.type === "ghost") {
-            blogService.registerBlog(name, new GhostBlogProvider(GhostBlogProviderOptionsSchema.parse(provider)));
-          }
-        }
-      });
+    for (const [name, account] of Object.entries(config.ghost.accounts)) {
+      if (account.cdn) {
+        app.services.waitForItemByType(CDNService, cdnService => {
+          cdnService.registerProvider(name, new GhostCDNProvider({url: account.url, apiKey: account.apiKey}));
+        });
+      }
+
+      if (account.blog) {
+        app.services.waitForItemByType(BlogService, blogService => {
+          blogService.registerBlog(name, new GhostBlogProvider({
+            url: account.url,
+            apiKey: account.apiKey,
+            description: account.blog!.description,
+            imageGenerationModel: account.blog!.imageGenerationModel,
+            cdn: account.blog!.cdn ?? name,
+          }));
+        });
+      }
     }
   },
-  config: packageConfigSchema
+  config: packageConfigSchema,
 } satisfies TokenRingPlugin<typeof packageConfigSchema>;
