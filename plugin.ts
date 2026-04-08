@@ -5,7 +5,7 @@ import {z} from "zod";
 import GhostBlogProvider from "./GhostBlogProvider.ts";
 import GhostCDNProvider from "./GhostCDNProvider.ts";
 import packageJSON from "./package.json" with {type: "json"};
-import {GhostConfigSchema, type GhostAccount} from "./schema.ts";
+import {type GhostAccount, GhostConfigSchema} from "./schema.ts";
 
 const packageConfigSchema = z.object({
   ghost: GhostConfigSchema.prefault({accounts: {}}),
@@ -24,7 +24,6 @@ function addAccountsFromEnv(accounts: Record<string, Partial<GhostAccount>>) {
       apiKey,
       blog: {
         description: process.env[`GHOST_DESCRIPTION${n}`] ?? `Ghost.io (${name})`,
-        imageGenerationModel: process.env[`GHOST_IMAGE_MODEL${n}`] ?? "gpt-image-1",
         cdn: process.env[`GHOST_BLOG_CDN${n}`] ?? name,
       },
       cdn: {}
@@ -39,7 +38,6 @@ export default {
   description: packageJSON.description,
   install(app, config) {
     addAccountsFromEnv(config.ghost.accounts);
-    //console.log("Ghost accounts:", config.ghost.accounts);
 
     for (const [name, account] of Object.entries(config.ghost.accounts)) {
       if (account.cdn) {
@@ -54,7 +52,6 @@ export default {
             url: account.url,
             apiKey: account.apiKey,
             description: account.blog!.description,
-            imageGenerationModel: account.blog!.imageGenerationModel,
             cdn: account.blog!.cdn ?? name,
           }));
         });

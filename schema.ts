@@ -6,7 +6,6 @@ export const GhostAccountCDNSchema = z.object({
 
 export const GhostAccountBlogSchema = z.object({
   description: z.string().default("Ghost blog"),
-  imageGenerationModel: z.string().default("gpt-image-1"),
   cdn: z.string().optional(),
 }).prefault({});
 

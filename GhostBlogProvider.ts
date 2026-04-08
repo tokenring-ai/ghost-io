@@ -74,11 +74,9 @@ export default class GhostBlogProvider implements BlogProvider {
   private readonly adminAPI: GhostAdminAPI;
   readonly description: string;
   readonly cdnName: string;
-  readonly imageGenerationModel: string;
 
   constructor(readonly options: GhostBlogProviderOptions) {
     this.cdnName = options.cdn;
-    this.imageGenerationModel = options.imageGenerationModel;
     this.description = options.description;
 
     this.adminAPI = new GhostAdminAPI({
@@ -144,7 +142,6 @@ export default class GhostBlogProvider implements BlogProvider {
 export const GhostBlogProviderOptionsSchema = z.object({
   url: z.string(),
   apiKey: z.string(),
-  imageGenerationModel: z.string(),
   cdn: z.string(),
   description: z.string(),
 });
