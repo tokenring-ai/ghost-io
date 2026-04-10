@@ -1,29 +1,30 @@
-import Agent from "@tokenring-ai/agent/Agent";
-import type {AgentCreationContext} from "@tokenring-ai/agent/types";
-import {BlogPost, BlogPostFilterOptions, type BlogPostListItem, BlogProvider, CreatePostData, UpdatePostData} from "@tokenring-ai/blog/BlogProvider";
-// @ts-ignore
+import type {BlogPost, BlogPostFilterOptions, BlogPostListItem, BlogProvider, CreatePostData, UpdatePostData,} from "@tokenring-ai/blog/BlogProvider";
 import GhostAdminAPI from "@tryghost/admin-api";
-import {z} from "zod";
+import type FormData from "form-data";
+import type {GhostBlogProviderOptions} from "./schema.ts";
 
-export interface GhostAdminAPI {
+export interface GhostAPI {
   posts: {
-    browse: (params: { limit: string }) => Promise<GhostPost[]>;
-    add: (data: GhostPost, options?: { source: string }) => Promise<GhostPost>;
+    browse: (params: { limit: string | number, filter?: string | undefined }) => Promise<GhostPost[]>;
+    add: (data: Omit<GhostPost, "id" | "created_at" | "updated_at">, options?: { source: string }) => Promise<GhostPost>;
     edit: (data: GhostPost) => Promise<GhostPost>;
-    read: (params: { id: string }) => Promise<GhostPost | null>;
+    read: (params: { id: string, formats?: "html" }) => Promise<GhostPost | null>;
   };
   tags: {
     browse: () => Promise<string[]>;
   };
   images: {
-    upload: (data: Buffer, options?: { filename: string; purpose: string }) => Promise<{ url: string; id: string; metadata: any }>;
-  }
+    upload: (
+      data: FormData,
+      options?: { filename: string; purpose: string },
+    ) => Promise<{ url: string; id: string; metadata: any }>;
+  };
 }
 
 export interface GhostPostListItem {
   id: string;
   title: string;
-  status: 'draft' | 'published' | 'scheduled';
+  status: "draft" | "published" | "scheduled";
   tags?: string[];
   created_at: string;
   updated_at: string;
@@ -45,11 +46,20 @@ function GhostPostListItemToBlogPostListItem({
                                                published_at,
                                                feature_image,
                                                title,
-                                               status
+                                               status,
                                              }: Partial<GhostPostListItem>): BlogPostListItem {
-  if (!id) throw new Error("Cannot convert GhostPost to BlogPost: Missing required field: id");
-  if (!title) throw new Error("Cannot convert GhostPost to BlogPost: Missing required field: title");
-  if (!status) throw new Error("Cannot convert GhostPost to BlogPost: Missing required field: status");
+  if (!id)
+    throw new Error(
+      "Cannot convert GhostPost to BlogPost: Missing required field: id",
+    );
+  if (!title)
+    throw new Error(
+      "Cannot convert GhostPost to BlogPost: Missing required field: title",
+    );
+  if (!status)
+    throw new Error(
+      "Cannot convert GhostPost to BlogPost: Missing required field: status",
+    );
 
   const now = Date.now();
   return {
@@ -66,12 +76,12 @@ function GhostPostListItemToBlogPostListItem({
 function GhostPostToBlogPost(args: Partial<GhostPost>): BlogPost {
   return {
     ...GhostPostListItemToBlogPostListItem(args),
-    html: args.html ?? ''
+    html: args.html ?? "",
   };
 }
 
 export default class GhostBlogProvider implements BlogProvider {
-  private readonly adminAPI: GhostAdminAPI;
+  private readonly adminAPI: GhostAPI;
   readonly description: string;
   readonly cdnName: string;
 
@@ -83,31 +93,38 @@ export default class GhostBlogProvider implements BlogProvider {
       url: options.url,
       version: "v5.0",
       key: options.apiKey,
-    });
-  }
-
-  attach(_agent: Agent, _creationContext: AgentCreationContext): void {
+    }) as unknown as GhostAPI;
   }
 
   async getAllPosts(): Promise<BlogPostListItem[]> {
-    const posts = (await this.adminAPI.posts.browse({limit: "all"})) as GhostPostListItem[];
+    const posts = (await this.adminAPI.posts.browse({
+      limit: "all",
+    })) as GhostPostListItem[];
     return posts.map(GhostPostListItemToBlogPostListItem);
   }
 
-  async getRecentPosts(filter: BlogPostFilterOptions): Promise<BlogPostListItem[]> {
+  async getRecentPosts(
+    filter: BlogPostFilterOptions,
+  ): Promise<BlogPostListItem[]> {
     const filterStrings: string[] = [];
-    if (filter.keyword) filterStrings.push(`(title:~${filter.keyword},html:~${filter.keyword})`);
+    if (filter.keyword)
+      filterStrings.push(`(title:~${filter.keyword},html:~${filter.keyword})`);
     if (filter.status) filterStrings.push(`status:${filter.status}`);
 
     const filterString = filterStrings.join("+");
-    const posts = await this.adminAPI.posts.browse({
+    const posts = (await this.adminAPI.posts.browse({
       limit: filter.limit || "all",
       filter: filterString || undefined,
-    }) as GhostPostListItem[];
+    })) as GhostPostListItem[];
     return posts.map(GhostPostListItemToBlogPostListItem);
   }
 
-  async createPost({title, html, tags = [], feature_image}: CreatePostData): Promise<BlogPost> {
+  async createPost({
+                     title,
+                     html,
+                     tags = [],
+                     feature_image,
+                   }: CreatePostData): Promise<BlogPost> {
     const post = await this.adminAPI.posts.add(
       {title, html, tags, status: "draft", feature_image: feature_image?.url},
       {source: "html"},
@@ -115,8 +132,12 @@ export default class GhostBlogProvider implements BlogProvider {
     return GhostPostToBlogPost(post);
   }
 
-  async updatePost(id: string, {title, html, tags, feature_image, status}: UpdatePostData): Promise<BlogPost> {
-    if (status === "pending" || status === "private") throw new Error("Ghost does not support pending or private posts");
+  async updatePost(
+    id: string,
+    {title, html, tags, feature_image, status}: UpdatePostData,
+  ): Promise<BlogPost> {
+    if (status === "pending" || status === "private")
+      throw new Error("Ghost does not support pending or private posts");
 
     const current = await this.adminAPI.posts.read({id});
     if (!current) throw new Error(`Post with ID ${id} not found`);
@@ -135,14 +156,7 @@ export default class GhostBlogProvider implements BlogProvider {
   async getPostById(id: string): Promise<BlogPost> {
     const post = await this.adminAPI.posts.read({id, formats: "html"});
     if (!post) throw new Error(`Post with ID ${id} not found`);
-    return {...GhostPostToBlogPost(post), html: post.html};
+
+    return {...GhostPostToBlogPost(post), html: post.html ?? ""};
   }
 }
-
-export const GhostBlogProviderOptionsSchema = z.object({
-  url: z.string(),
-  apiKey: z.string(),
-  cdn: z.string(),
-  description: z.string(),
-});
-export type GhostBlogProviderOptions = z.infer<typeof GhostBlogProviderOptionsSchema>;

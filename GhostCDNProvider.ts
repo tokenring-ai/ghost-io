@@ -1,13 +1,13 @@
 import CDNProvider from "@tokenring-ai/cdn/CDNProvider";
-import {UploadOptions, UploadResult} from "@tokenring-ai/cdn/types";
-// @ts-ignore
+import type {UploadOptions, UploadResult} from "@tokenring-ai/cdn/types";
 import GhostAdminAPI from "@tryghost/admin-api";
 import FormData from "form-data";
 import {v4 as uuid} from "uuid";
-import {z} from "zod";
+import type {GhostAPI} from "./GhostBlogProvider.ts";
+import type {GhostCDNProviderOptions} from "./schema.ts";
 
 export default class GhostCDNProvider extends CDNProvider {
-  private readonly adminAPI: GhostAdminAPI;
+  private readonly adminAPI;
 
   /**
    * Creates an instance of GhostIOService
@@ -15,15 +15,13 @@ export default class GhostCDNProvider extends CDNProvider {
   constructor(private options: GhostCDNProviderOptions) {
     super();
 
-
     this.adminAPI = new GhostAdminAPI({
       // Ghost Admin API client
       url: options.url,
       version: "v5.0",
       key: options.apiKey,
-    });
+    }) as unknown as GhostAPI;
   }
-
 
   async upload(data: Buffer, options?: UploadOptions): Promise<UploadResult> {
     const filename = options?.filename || `${uuid()}.jpg`;
@@ -40,14 +38,9 @@ export default class GhostCDNProvider extends CDNProvider {
         url: result.url,
         id: filename,
         metadata: options?.metadata,
-      }
+      };
     } catch (error) {
       throw new Error(`Failed to upload image: ${(error as Error).message}`);
     }
   }
 }
-export const GhostCDNProviderOptionsSchema = z.object({
-  url: z.string(),
-  apiKey: z.string(),
-});
-export type GhostCDNProviderOptions = z.infer<typeof GhostCDNProviderOptionsSchema>;

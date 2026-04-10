@@ -1,13 +1,13 @@
 import {z} from "zod";
 
-export const GhostAccountCDNSchema = z.object({
+export const GhostAccountCDNSchema = z.object({}).prefault({});
 
-}).prefault({})
-
-export const GhostAccountBlogSchema = z.object({
-  description: z.string().default("Ghost blog"),
-  cdn: z.string().optional(),
-}).prefault({});
+export const GhostAccountBlogSchema = z
+  .object({
+    description: z.string().default("Ghost blog"),
+    cdn: z.string().optional(),
+  })
+  .prefault({});
 
 export const GhostAccountSchema = z.object({
   url: z.string(),
@@ -24,3 +24,19 @@ export type GhostConfig = z.output<typeof GhostConfigSchema>;
 export type GhostAccount = z.output<typeof GhostAccountSchema>;
 export type GhostAccountBlog = z.output<typeof GhostAccountBlogSchema>;
 export type GhostAccountCDN = z.output<typeof GhostAccountCDNSchema>;
+export const GhostBlogProviderOptionsSchema = z.object({
+  url: z.string(),
+  apiKey: z.string(),
+  cdn: z.string(),
+  description: z.string(),
+});
+export type GhostBlogProviderOptions = z.infer<
+  typeof GhostBlogProviderOptionsSchema
+>;
+export const GhostCDNProviderOptionsSchema = z.object({
+  url: z.string(),
+  apiKey: z.string(),
+});
+export type GhostCDNProviderOptions = z.infer<
+  typeof GhostCDNProviderOptionsSchema
+>;

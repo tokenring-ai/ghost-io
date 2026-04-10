@@ -1,4 +1,4 @@
-import {TokenRingPlugin} from "@tokenring-ai/app";
+import type {TokenRingPlugin} from "@tokenring-ai/app";
 import {BlogService} from "@tokenring-ai/blog";
 import {CDNService} from "@tokenring-ai/cdn";
 import {z} from "zod";
@@ -23,10 +23,11 @@ function addAccountsFromEnv(accounts: Record<string, Partial<GhostAccount>>) {
       url: value,
       apiKey,
       blog: {
-        description: process.env[`GHOST_DESCRIPTION${n}`] ?? `Ghost.io (${name})`,
+        description:
+          process.env[`GHOST_DESCRIPTION${n}`] ?? `Ghost.io (${name})`,
         cdn: process.env[`GHOST_BLOG_CDN${n}`] ?? name,
       },
-      cdn: {}
+      cdn: {},
     };
   }
 }
@@ -41,19 +42,25 @@ export default {
 
     for (const [name, account] of Object.entries(config.ghost.accounts)) {
       if (account.cdn) {
-        app.services.waitForItemByType(CDNService, cdnService => {
-          cdnService.registerProvider(name, new GhostCDNProvider({url: account.url, apiKey: account.apiKey}));
+        app.services.waitForItemByType(CDNService, (cdnService) => {
+          cdnService.registerProvider(
+            name,
+            new GhostCDNProvider({url: account.url, apiKey: account.apiKey}),
+          );
         });
       }
 
       if (account.blog) {
-        app.services.waitForItemByType(BlogService, blogService => {
-          blogService.registerBlog(name, new GhostBlogProvider({
-            url: account.url,
-            apiKey: account.apiKey,
-            description: account.blog!.description,
-            cdn: account.blog!.cdn ?? name,
-          }));
+        app.services.waitForItemByType(BlogService, (blogService) => {
+          blogService.registerBlog(
+            name,
+            new GhostBlogProvider({
+              url: account.url,
+              apiKey: account.apiKey,
+              description: account.blog.description,
+              cdn: account.blog.cdn ?? name,
+            }),
+          );
         });
       }
     }
