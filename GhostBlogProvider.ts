@@ -1,4 +1,5 @@
-import type {BlogPost, BlogPostFilterOptions, BlogPostListItem, BlogProvider, CreatePostData, UpdatePostData,} from "@tokenring-ai/blog/BlogProvider";
+import type {BlogPost, BlogPostFilterOptions, BlogPostListItem, BlogProvider, CreatePostData, UpdatePostData} from "@tokenring-ai/blog/BlogProvider";
+// @ts-expect-error
 import GhostAdminAPI from "@tryghost/admin-api";
 import type FormData from "form-data";
 import type {GhostBlogProviderOptions} from "./schema.ts";
