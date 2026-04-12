@@ -4,23 +4,15 @@
   "description": "Ghost.io integration for Token Ring",
   "dependencies": {
     "@tokenring-ai/app": "0.2.0",
-    "@tokenring-ai/chat": "0.2.0",
     "zod": "^4.3.6",
-    "@lexical/headless": "^0.42.0",
-    "@lexical/markdown": "^0.42.0",
-    "@tokenring-ai/ai-client": "0.2.0",
     "@tokenring-ai/blog": "0.2.0",
     "@tokenring-ai/cdn": "0.2.0",
-    "@tokenring-ai/agent": "0.2.0",
-    "@tokenring-ai/filesystem": "0.2.0",
     "@tryghost/admin-api": "^1.14.7",
-    "@tryghost/content-api": "^1.12.6",
     "form-data": "^4.0.5",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
     "vitest": "^4.1.1",
-    "@vitest/coverage-v8": "^4.1.2",
     "typescript": "^6.0.2"
   },
   "exports": {
