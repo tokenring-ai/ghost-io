@@ -40,7 +40,7 @@ export default class GhostCDNProvider extends CDNProvider {
         id: filename,
         metadata: options?.metadata,
       };
-    } catch (error) {
+    } catch (error: unknown) {
       throw new Error(`Failed to upload image: ${(error as Error).message}`);
     }
   }
