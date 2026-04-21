@@ -94,7 +94,7 @@ export default class GhostBlogProvider implements BlogProvider {
       url: options.url,
       version: "v5.0",
       key: options.apiKey,
-    }) as unknown as GhostAPI;
+    });
   }
 
   async getAllPosts(): Promise<BlogPostListItem[]> {

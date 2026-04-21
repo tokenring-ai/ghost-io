@@ -21,7 +21,7 @@ export default class GhostCDNProvider extends CDNProvider {
       url: options.url,
       version: "v5.0",
       key: options.apiKey,
-    }) as unknown as GhostAPI;
+    });
   }
 
   async upload(data: Buffer, options?: UploadOptions): Promise<UploadResult> {
