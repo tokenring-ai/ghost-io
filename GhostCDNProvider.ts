@@ -1,11 +1,10 @@
 import CDNProvider from "@tokenring-ai/cdn/CDNProvider";
-import type {UploadOptions, UploadResult} from "@tokenring-ai/cdn/types";
+import type { UploadOptions, UploadResult } from "@tokenring-ai/cdn/types";
 // @ts-expect-error
 import GhostAdminAPI from "@tryghost/admin-api";
 import FormData from "form-data";
-import {v4 as uuid} from "uuid";
-import type {GhostAPI} from "./GhostBlogProvider.ts";
-import type {GhostCDNProviderOptions} from "./schema.ts";
+import { v4 as uuid } from "uuid";
+import type { GhostCDNProviderOptions } from "./schema.ts";
 
 export default class GhostCDNProvider extends CDNProvider {
   private readonly adminAPI;
@@ -28,7 +27,7 @@ export default class GhostCDNProvider extends CDNProvider {
     const filename = options?.filename || `${uuid()}.jpg`;
 
     const formData = new FormData();
-    formData.append("file", data, {filename});
+    formData.append("file", data, { filename });
     formData.append("purpose", "image");
 
     try {

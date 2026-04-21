@@ -1,11 +1,11 @@
-import {z} from "zod";
+import { z } from "zod";
 
 export const GhostAccountCDNSchema = z.object({}).prefault({});
 
 export const GhostAccountBlogSchema = z
   .object({
     description: z.string().default("Ghost blog"),
-    cdn: z.string().optional(),
+    cdn: z.string().exactOptional(),
   })
   .prefault({});
 
@@ -30,13 +30,9 @@ export const GhostBlogProviderOptionsSchema = z.object({
   cdn: z.string(),
   description: z.string(),
 });
-export type GhostBlogProviderOptions = z.infer<
-  typeof GhostBlogProviderOptionsSchema
->;
+export type GhostBlogProviderOptions = z.infer<typeof GhostBlogProviderOptionsSchema>;
 export const GhostCDNProviderOptionsSchema = z.object({
   url: z.string(),
   apiKey: z.string(),
 });
-export type GhostCDNProviderOptions = z.infer<
-  typeof GhostCDNProviderOptionsSchema
->;
+export type GhostCDNProviderOptions = z.infer<typeof GhostCDNProviderOptionsSchema>;
