@@ -10,7 +10,7 @@
     "@tokenring-ai/utility": "0.2.0",
     "@tryghost/admin-api": "^1.14.7",
     "form-data": "^4.0.5",
-    "uuid": "^13.0.0"
+    "uuid": "14.0.0"
   },
   "devDependencies": {
     "vitest": "^4.1.1",
