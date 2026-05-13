@@ -2,7 +2,8 @@
 
 ## Overview
 
-Ghost.io integration package for the Token Ring framework. This package provides seamless integration with Ghost.io publishing platforms for AI-powered blog post management and content creation.
+Ghost.io integration package for the Token Ring framework. This package provides seamless integration with Ghost.io
+publishing platforms for AI-powered blog post management and content creation.
 
 This package exports:
 
@@ -35,11 +36,11 @@ The package exports the following modules:
 
 ```typescript
 // Main exports
-export {default as GhostBlogProvider} from "./GhostBlogProvider.ts";
-export {default as GhostCDNProvider} from "./GhostCDNProvider.ts";
+export { default as GhostBlogProvider } from "./GhostBlogProvider.ts";
+export { default as GhostCDNProvider } from "./GhostCDNProvider.ts";
 
 // Plugin
-export {default} from "./plugin.ts";
+export { default } from "./plugin.ts";
 ```
 
 ## Core Components/API
@@ -48,7 +49,7 @@ export {default} from "./plugin.ts";
 
 GhostBlogProvider implements the `BlogProvider` interface and provides a typed wrapper over the Ghost Admin API.
 
-**Constructor**
+#### GhostBlogProvider Constructor
 
 ```typescript
 constructor(options: GhostBlogProviderOptions)
@@ -61,56 +62,58 @@ Parameters:
 - `options.cdn`: Name of the CDN provider to use (must match CDN provider name)
 - `options.description`: Human-readable description of the blog
 
-**Properties**
+#### GhostBlogProvider Properties
 
 - `description`: Human-readable description of the blog
 - `cdnName`: Name of the CDN provider to use
 - `options`: Original configuration
 
-**Methods**
+#### GhostBlogProvider Methods
 
-| Method | Parameters | Returns | Description |
-|--------|------------|---------|-------------|
-| `getAllPosts` | - | `Promise<BlogPostListItem[]>` | Fetches all posts from Ghost |
-| `getRecentPosts` | `filter: BlogPostFilterOptions` | `Promise<BlogPostListItem[]>` | Fetches recent posts with filtering |
-| `createPost` | `data: CreatePostData` | `Promise<BlogPost>` | Creates a new draft post |
-| `updatePost` | `id: string, data: UpdatePostData` | `Promise<BlogPost>` | Updates a post by ID |
-| `getPostById` | `id: string` | `Promise<BlogPost>` | Retrieves a post by ID |
+| Method           | Parameters                         | Returns                       | Description                         |
+|------------------|------------------------------------|-------------------------------|-------------------------------------|
+| `getAllPosts`    | -                                  | `Promise<BlogPostListItem[]>` | Fetches all posts from Ghost        |
+| `getRecentPosts` | `filter: BlogPostFilterOptions`    | `Promise<BlogPostListItem[]>` | Fetches recent posts with filtering |
+| `createPost`     | `data: CreatePostData`             | `Promise<BlogPost>`           | Creates a new draft post            |
+| `updatePost`     | `id: string, data: UpdatePostData` | `Promise<BlogPost>`           | Updates a post by ID                |
+| `getPostById`    | `id: string`                       | `Promise<BlogPost>`           | Retrieves a post by ID              |
 
-**Method Details:**
+#### GhostBlogProvider Method Details
 
-- **`getAllPosts()`**: Fetches **all** posts from Ghost Admin API. Returns an array of all posts converted from Ghost's native format to `BlogPostListItem`.
+- **`getAllPosts()`**: Fetches **all** posts from Ghost Admin API. Returns an array of all posts converted from Ghost's
+  native format to `BlogPostListItem`.
 
 - **`getRecentPosts(filter)`**: Fetches recent posts with filtering options. Supports:
-  - `filter.keyword`: Keyword search across title and html content
-  - `filter.status`: Filter by post status (`draft`, `published`, `scheduled`)
-  - `filter.limit`: Limit number of posts (default: "all")
-  
-  Returns posts converted from Ghost's native format to `BlogPostListItem`.
+- `filter.keyword`: Keyword search across title and html content
+- `filter.status`: Filter by post status (`draft`, `published`, `scheduled`)
+- `filter.limit`: Limit number of posts (default: "all")
+
+Returns posts converted from Ghost's native format to `BlogPostListItem`.
 
 - **`createPost(data)`**: Creates a new draft post. Creates the post with `status: "draft"` by default.
-  
+
   Parameters:
-  - `title`: Post title
-  - `html`: Post content in HTML format
-  - `tags`: Array of tag names
-  - `feature_image`: Optional feature image object with `url` property
+- `title`: Post title
+- `html`: Post content in HTML format
+- `tags`: Array of tag names
+- `feature_image`: Optional feature image object with `url` property
 
 - **`updatePost(id, data)`**: Updates a post by ID.
-  
-  **LIMITATION**: Does not support `status: 'pending'` or `status: 'private'` as Ghost API returns errors for these values.
-  
+
+  **LIMITATION**: Does not support `status: 'pending'` or `status: 'private'` as Ghost API returns errors for these
+  values.
+
   Parameters:
-  - `id`: Post ID to update
-  - `data.title`: Optional new title
-  - `data.html`: Optional new content
-  - `data.tags`: Optional new tags
-  - `data.feature_image`: Optional new feature image
-  - `data.status`: Optional new status (`draft`, `published`, `scheduled`)
+- `id`: Post ID to update
+- `data.title`: Optional new title
+- `data.html`: Optional new content
+- `data.tags`: Optional new tags
+- `data.feature_image`: Optional new feature image
+- `data.status`: Optional new status (`draft`, `published`, `scheduled`)
 
 - **`getPostById(id)`**: Retrieves a post by its ID with HTML content. Throws error if post not found.
 
-**Ghost Post Data Structures:**
+#### Ghost Post Data Structures
 
 ```typescript
 interface GhostPostListItem {
@@ -136,7 +139,7 @@ interface GhostPost extends GhostPostListItem {
 
 GhostCDNProvider extends the `CDNProvider` interface and handles image uploads to Ghost CDN.
 
-**Constructor**
+#### GhostCDNProvider Constructor
 
 ```typescript
 constructor(options: GhostCDNProviderOptions)
@@ -147,30 +150,33 @@ Parameters:
 - `options.url`: Your Ghost site URL
 - `options.apiKey`: Admin API key for image upload operations
 
-**Methods**
+#### GhostCDNProvider Methods
 
-| Method | Parameters | Returns | Description |
-|--------|------------|---------|-------------|
+| Method   | Parameters                              | Returns                 | Description                |
+|----------|-----------------------------------------|-------------------------|----------------------------|
 | `upload` | `data: Buffer, options?: UploadOptions` | `Promise<UploadResult>` | Uploads image to Ghost CDN |
 
-**Method Details:**
+#### GhostCDNProvider Method Details
 
-- `upload(data, options)`: Uploads an image to Ghost CDN. Takes a Buffer containing the image data and optional filename/metadata. Returns an object with the uploaded `url` and `id`. Uses Ghost Admin API's image upload endpoint with FormData. Automatically generates a unique filename using UUID if not provided.
+- `upload(data, options)`: Uploads an image to Ghost CDN. Takes a Buffer containing the image data and optional
+  filename/metadata. Returns an object with the uploaded `url` and `id`. Uses Ghost Admin API's image upload endpoint
+  with FormData. Automatically generates a unique filename using UUID if not provided.
 
 ## Configuration
 
 ### Plugin Configuration
 
-The plugin integrates with Token Ring's existing BlogService and CDNService infrastructure using an account-based configuration pattern.
+The plugin integrates with Token Ring's existing BlogService and CDNService infrastructure using an account-based
+configuration pattern.
 
-**Configuration Schema:**
+#### Configuration Schema
 
 ```typescript
-import {z} from "zod";
-import {GhostConfigSchema} from "./schema.ts";
+import { z } from "zod";
+import { GhostConfigSchema } from "./schema.ts";
 
 const packageConfigSchema = z.object({
-  ghost: GhostConfigSchema.prefault({accounts: {}}),
+  ghost: GhostConfigSchema.prefault({ accounts: {} }),
 });
 
 // GhostConfigSchema structure:
@@ -189,10 +195,10 @@ const packageConfigSchema = z.object({
 }
 ```
 
-**Plugin Installation:**
+#### Plugin Installation
 
 ```typescript
-import {App} from "@tokenring-ai/app";
+import { App } from "@tokenring-ai/app";
 import ghostIoPlugin from "@tokenring-ai/ghost-io/plugin";
 
 const app = new App();
@@ -263,28 +269,30 @@ GHOST_ACCOUNT_NAME2=production-blog
 }
 ```
 
-**Required Properties:**
+#### Required Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `url` | string | Your Ghost site URL (e.g., `https://demo.ghost.io`) |
+| Property | Type   | Description                                                    |
+|----------|--------|----------------------------------------------------------------|
+| `url`    | string | Your Ghost site URL (e.g., `https://demo.ghost.io`)            |
 | `apiKey` | string | Admin API key for writes (create/update/publish, image upload) |
 
-**Optional Properties:**
+#### Optional Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
+| Property           | Type   | Description                                                    |
+|--------------------|--------|----------------------------------------------------------------|
 | `blog.description` | string | Human-readable description of the blog (default: "Ghost blog") |
-| `blog.cdn` | string | Name of the CDN provider to use |
-| `cdn` | object | CDN configuration (empty object enables CDN provider) |
+| `blog.cdn`         | string | Name of the CDN provider to use                                |
+| `cdn`              | object | CDN configuration (empty object enables CDN provider)          |
 
 ## Tools
 
-This package does not provide any tools directly. It provides provider classes (`GhostBlogProvider`, `GhostCDNProvider`) that are registered with the Token Ring services (BlogService and CDNService) via the plugin system.
+This package does not provide any tools directly. It provides provider classes (`GhostBlogProvider`, `GhostCDNProvider`)
+that are registered with the Token Ring services (BlogService and CDNService) via the plugin system.
 
 ## Services
 
-This package does not export service classes directly. Instead, it exports provider classes (`GhostBlogProvider`, `GhostCDNProvider`) that are registered with the BlogService and CDNService at runtime via the plugin system.
+This package does not export service classes directly. Instead, it exports provider classes (`GhostBlogProvider`,
+`GhostCDNProvider`) that are registered with the BlogService and CDNService at runtime via the plugin system.
 
 ### Provider Architecture
 
@@ -338,7 +346,7 @@ interface GhostAPI {
 }
 ```
 
-**Error Handling**
+### Error Handling
 
 - Throws error if `id`, `title`, or `status` is missing during conversion to `BlogPostListItem`
 - Throws error when post not found during `getPostById` or `updatePost`
@@ -347,11 +355,14 @@ interface GhostAPI {
 
 ## RPC Endpoints
 
-This package does not define any RPC endpoints. The package provides provider classes that are registered with Token Ring services.
+This package does not define any RPC endpoints. The package provides provider classes that are registered with Token
+Ring services.
 
 ## Chat Commands
 
-This package does not directly expose chat commands. Chat command functionality would be implemented by applications that use this package (e.g., Coder, Writer) by registering commands that utilize the GhostBlogProvider and GhostCDNProvider through the BlogService and CDNService.
+This package does not directly expose chat commands. Chat command functionality would be implemented by applications
+that use this package (e.g., Coder, Writer) by registering commands that utilize the GhostBlogProvider and
+GhostCDNProvider through the BlogService and CDNService.
 
 ## Integration
 
@@ -361,10 +372,11 @@ The `@tokenring-ai/ghost-io` package integrates with the Token Ring ecosystem th
 
 #### Plugin Registration
 
-The package provides a plugin that automatically registers providers with the BlogService and CDNService based on configured accounts:
+The package provides a plugin that automatically registers providers with the BlogService and CDNService based on
+configured accounts:
 
 ```typescript
-import {App} from "@tokenring-ai/app";
+import { App } from "@tokenring-ai/app";
 import ghostIoPlugin from "@tokenring-ai/ghost-io/plugin";
 
 const app = new App();
@@ -398,16 +410,15 @@ app.installPlugin(ghostIoPlugin, {
 
 The package integrates with the following Token Ring services:
 
-| Service | Integration | Purpose |
-|---------|-------------|---------|
-| `BlogService` | Provider registration | Blog post CRUD operations |
-| `CDNService` | Provider registration | Image upload and management |
+| Service       | Integration           | Purpose                     |
+|---------------|-----------------------|-----------------------------|
+| `BlogService` | Provider registration | Blog post CRUD operations   |
+| `CDNService`  | Provider registration | Image upload and management |
 
 ### Related Packages
 
 - **@tokenring-ai/blog**: Blog service interface and provider system
 - **@tokenring-ai/cdn**: CDN service interface and provider system
-- **@tokenring-ai/agent**: Agent system and state management
 - **@tokenring-ai/app**: Core application framework
 - **@tryghost/admin-api**: Ghost Admin SDK
 
@@ -418,7 +429,7 @@ The package integrates with the following Token Ring services:
 After configuration, the GhostBlogProvider is registered with the BlogService. Agents can access it through the service:
 
 ```typescript
-import {BlogService} from "@tokenring-ai/blog";
+import { BlogService } from "@tokenring-ai/blog";
 
 // In a tool or service
 const blogService = agent.requireServiceByType(BlogService);
@@ -428,10 +439,10 @@ const provider = blogService.getBlog("my-blog"); // Get specific provider by nam
 const allPosts = await provider.getAllPosts();
 ```
 
-### Example: Creating a Draft Post
+### Creating a Draft Post
 
 ```typescript
-import {BlogService} from "@tokenring-ai/blog";
+import { BlogService } from "@tokenring-ai/blog";
 
 const blogService = agent.requireServiceByType(BlogService);
 const provider = blogService.getBlog("my-ghost-blog");
@@ -449,10 +460,10 @@ const newPost = await provider.createPost({
 console.log("Created post:", newPost.id, newPost.title);
 ```
 
-### Example: Uploading an Image to CDN
+### Uploading an Image to CDN
 
 ```typescript
-import {CDNService} from "@tokenring-ai/cdn";
+import { CDNService } from "@tokenring-ai/cdn";
 
 const cdnService = agent.requireServiceByType(CDNService);
 
@@ -470,10 +481,10 @@ const result = await provider.upload(imageBuffer, {
 console.log("Uploaded to:", result.url);
 ```
 
-### Example: Listing and Filtering Posts
+### Listing and Filtering Posts
 
 ```typescript
-import {BlogService} from "@tokenring-ai/blog";
+import { BlogService } from "@tokenring-ai/blog";
 
 const blogService = agent.requireServiceByType(BlogService);
 const provider = blogService.getBlog("my-ghost-blog");
@@ -499,10 +510,10 @@ recentPosts.forEach(post => {
 });
 ```
 
-### Example: Updating a Post
+### Updating a Post
 
 ```typescript
-import {BlogService} from "@tokenring-ai/blog";
+import { BlogService } from "@tokenring-ai/blog";
 
 const blogService = agent.requireServiceByType(BlogService);
 const provider = blogService.getBlog("my-ghost-blog");
@@ -521,12 +532,11 @@ const updatedPost = await provider.updatePost("post-id-here", {
 console.log("Updated post:", updatedPost.title);
 ```
 
-## Error Handling
-
-### Common Errors
+## Common Errors
 
 - **API Errors**: Authentication or connection errors from the Ghost Admin API
-- **Conversion Errors**: Missing required fields (`id`, `title`, `status`) when converting Ghost posts to BlogPost format
+- **Conversion Errors**: Missing required fields (`id`, `title`, `status`) when converting Ghost posts to BlogPost
+  format
 - **Status Errors**: Attempting to set `status: 'pending'` or `status: 'private'` which Ghost does not support
 - **Not Found Errors**: Attempting to update or retrieve a post that doesn't exist
 
@@ -585,29 +595,23 @@ bun run build
 
 ### Production Dependencies
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `@tokenring-ai/app` | 0.2.0 | Core application framework |
-| `@tokenring-ai/chat` | 0.2.0 | Chat command system |
-| `zod` | ^4.3.6 | Runtime type validation |
-| `@lexical/headless` | ^0.42.0 | Lexical headless mode for content processing |
-| `@lexical/markdown` | ^0.42.0 | Markdown conversion for Lexical content |
-| `@tokenring-ai/ai-client` | 0.2.0 | AI client integration |
-| `@tokenring-ai/blog` | 0.2.0 | Blog service interface and provider system |
-| `@tokenring-ai/cdn` | 0.2.0 | CDN service interface and provider system |
-| `@tokenring-ai/agent` | 0.2.0 | Agent system and state management |
-| `@tokenring-ai/filesystem` | 0.2.0 | Filesystem operations |
-| `@tryghost/admin-api` | ^1.14.7 | Official Ghost Admin SDK |
-| `form-data` | ^4.0.5 | FormData for image upload |
-| `uuid` | ^13.0.0 | UUID generation for filenames |
+| Package                 | Version | Purpose                                      |
+|-------------------------|---------|----------------------------------------------|
+| `@tokenring-ai/app`     | 0.2.0   | Core application framework                   |
+| `@tokenring-ai/utility` | 0.2.0   | Utility functions including object utilities |
+| `@tokenring-ai/blog`    | 0.2.0   | Blog service interface and provider system   |
+| `@tokenring-ai/cdn`     | 0.2.0   | CDN service interface and provider system    |
+| `zod`                   | ^4.3.6  | Runtime type validation                      |
+| `@tryghost/admin-api`   | ^1.14.7 | Official Ghost Admin SDK                     |
+| `form-data`             | ^4.0.5  | FormData for image upload                    |
+| `uuid`                  | ^13.0.0 | UUID generation for filenames                |
 
 ### Development Dependencies
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `vitest` | ^4.1.1 | Unit testing framework |
-| `@vitest/coverage-v8` | ^4.1.1 | Code coverage reporting |
-| `typescript` | ^6.0.2 | Type definitions and compilation |
+| Package      | Version | Purpose                          |
+|--------------|---------|----------------------------------|
+| `vitest`     | ^4.1.1  | Unit testing framework           |
+| `typescript` | ^6.0.2  | Type definitions and compilation |
 
 ## License
 

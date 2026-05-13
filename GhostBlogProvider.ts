@@ -71,9 +71,9 @@ function GhostPostToBlogPost(args: Partial<GhostPost>): BlogPost {
 }
 
 export default class GhostBlogProvider implements BlogProvider {
-  private readonly adminAPI: GhostAPI;
   readonly description: string;
   readonly cdnName: string;
+  private readonly adminAPI: GhostAPI;
 
   constructor(readonly options: GhostBlogProviderOptions) {
     this.cdnName = options.cdn;

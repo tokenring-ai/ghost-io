@@ -592,7 +592,7 @@ Supports the following intervals: d, w, M, y, h, m, s
 Operators
 
 -
- - not
+- not
 
 > - greater than
     >= - greater than or equals
@@ -605,13 +605,14 @@ Operators
     Combinations
 
 +
- - represents and
-   , - represents or
-   ( filter expression ) - overrides operator precedence
-   Strings vs Literals
-   Most of the time, there’s no need to put quotes around strings when building filters in Ghost. If you filter based on
-   slugs, slugs are always compatible with literals. However, in some cases you may need to use a string that contains
-   one of the other characters used in the filter syntax, e.g. dates & times contain:. Use single-quotes for these.
+
+- represents and
+  , - represents or
+  ( filter expression ) - overrides operator precedence
+  Strings vs Literals
+  Most of the time, there’s no need to put quotes around strings when building filters in Ghost. If you filter based on
+  slugs, slugs are always compatible with literals. However, in some cases you may need to use a string that contains
+  one of the other characters used in the filter syntax, e.g. dates & times contain:. Use single-quotes for these.
 
 Pagination
 All browse endpoints are paginated, returning 15 records by default. You can use the page and limit parameters to move
