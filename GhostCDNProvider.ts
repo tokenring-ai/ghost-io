@@ -1,6 +1,5 @@
 import CDNProvider from "@tokenring-ai/cdn/CDNProvider";
 import type { UploadOptions, UploadResult } from "@tokenring-ai/cdn/types";
-// @ts-expect-error
 import GhostAdminAPI from "@tryghost/admin-api";
 import FormData from "form-data";
 import { v4 as uuid } from "uuid";
@@ -31,8 +30,6 @@ export default class GhostCDNProvider extends CDNProvider {
     formData.append("purpose", "image");
 
     try {
-      // Use type assertion to bypass the type checking for the images property
-      // This is necessary because the @tryghost/admin-api type definitions might be incomplete
       const result = await this.adminAPI.images.upload(formData);
       return {
         url: result.url,

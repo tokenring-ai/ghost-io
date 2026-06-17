@@ -1,52 +1,17 @@
 import type { BlogPost, BlogPostFilterOptions, BlogPostListItem, BlogProvider, CreatePostData, UpdatePostData } from "@tokenring-ai/blog/BlogProvider";
 import { stripUndefinedKeys } from "@tokenring-ai/utility/object/stripObject";
-// @ts-expect-error
-import GhostAdminAPI from "@tryghost/admin-api";
-import type FormData from "form-data";
+import GhostAdminAPI, { type GhostPost, type GhostPostListItem } from "@tryghost/admin-api";
 import type { GhostBlogProviderOptions } from "./schema.ts";
 
-export interface GhostAPI {
-  posts: {
-    browse: (params: { limit: string | number; filter?: string | undefined }) => Promise<GhostPost[]>;
-    add: (data: Omit<GhostPost, "id" | "created_at" | "updated_at">, options?: { source: string }) => Promise<GhostPost>;
-    edit: (data: GhostPost) => Promise<GhostPost>;
-    read: (params: { id: string; formats?: "html" }) => Promise<GhostPost | null>;
-  };
-  tags: {
-    browse: () => Promise<string[]>;
-  };
-  images: {
-    upload: (data: FormData, options?: { filename: string; purpose: string }) => Promise<{ url: string; id: string; metadata: any }>;
-  };
-}
-
-export interface GhostPostListItem {
-  id: string;
-  title: string;
-  status: "draft" | "published" | "scheduled";
-  tags?: string[] | undefined;
-  created_at: string;
-  updated_at: string;
-  feature_image?: string | undefined;
-  published_at?: string | undefined;
-  excerpt?: string | undefined;
-  url?: string | undefined;
-  slug?: string | undefined;
-}
-
-export interface GhostPost extends GhostPostListItem {
-  html?: string | undefined;
-}
-
 function GhostPostListItemToBlogPostListItem({
-  id,
-  created_at,
-  updated_at,
-  published_at,
-  feature_image,
-  title,
-  status,
-}: Partial<GhostPostListItem>): BlogPostListItem {
+                                               id,
+                                               created_at,
+                                               updated_at,
+                                               published_at,
+                                               feature_image,
+                                               title,
+                                               status,
+                                             }: Partial<GhostPostListItem>): BlogPostListItem {
   if (!id) throw new Error("Cannot convert GhostPost to BlogPost: Missing required field: id");
   if (!title) throw new Error("Cannot convert GhostPost to BlogPost: Missing required field: title");
   if (!status) throw new Error("Cannot convert GhostPost to BlogPost: Missing required field: status");
@@ -73,7 +38,7 @@ function GhostPostToBlogPost(args: Partial<GhostPost>): BlogPost {
 export default class GhostBlogProvider implements BlogProvider {
   readonly description: string;
   readonly cdnName: string;
-  private readonly adminAPI: GhostAPI;
+  private readonly adminAPI;
 
   constructor(readonly options: GhostBlogProviderOptions) {
     this.cdnName = options.cdn;
@@ -107,7 +72,13 @@ export default class GhostBlogProvider implements BlogProvider {
   }
 
   async createPost({ title, html, tags = [], feature_image }: CreatePostData): Promise<BlogPost> {
-    const post = await this.adminAPI.posts.add({ title, html, tags, status: "draft", feature_image: feature_image?.url }, { source: "html" });
+    const post = await this.adminAPI.posts.add({
+      title,
+      html,
+      tags,
+      status: "draft",
+      ...(feature_image && { feature_image: feature_image.url })
+    }, { source: "html" });
     return GhostPostToBlogPost(post);
   }
 
