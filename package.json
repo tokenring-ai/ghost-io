@@ -4,13 +4,13 @@
   "description": "Ghost.io integration for Token Ring",
   "dependencies": {
     "@tokenring-ai/app": "workspace:*",
-    "zod": "^4.3.6",
+    "zod": "^4.4.3",
     "@tokenring-ai/blog": "workspace:*",
     "@tokenring-ai/cdn": "workspace:*",
     "@tokenring-ai/utility": "workspace:*",
-    "@tryghost/admin-api": "^1.14.7",
-    "form-data": "^4.0.5",
-    "uuid": "14.0.0"
+    "@tryghost/admin-api": "^1.14.10",
+    "form-data": "^4.0.6",
+    "uuid": "14.0.1"
   },
   "devDependencies": {
     "vitest": "^4.1.1",
