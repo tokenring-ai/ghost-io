@@ -4,14 +4,14 @@ import GhostAdminAPI, { type GhostPost, type GhostPostListItem } from "@tryghost
 import type { GhostBlogProviderOptions } from "./schema.ts";
 
 function GhostPostListItemToBlogPostListItem({
-                                               id,
-                                               created_at,
-                                               updated_at,
-                                               published_at,
-                                               feature_image,
-                                               title,
-                                               status,
-                                             }: Partial<GhostPostListItem>): BlogPostListItem {
+  id,
+  created_at,
+  updated_at,
+  published_at,
+  feature_image,
+  title,
+  status,
+}: Partial<GhostPostListItem>): BlogPostListItem {
   if (!id) throw new Error("Cannot convert GhostPost to BlogPost: Missing required field: id");
   if (!title) throw new Error("Cannot convert GhostPost to BlogPost: Missing required field: title");
   if (!status) throw new Error("Cannot convert GhostPost to BlogPost: Missing required field: status");
@@ -72,13 +72,16 @@ export default class GhostBlogProvider implements BlogProvider {
   }
 
   async createPost({ title, html, tags = [], feature_image }: CreatePostData): Promise<BlogPost> {
-    const post = await this.adminAPI.posts.add({
-      title,
-      html,
-      tags,
-      status: "draft",
-      ...(feature_image && { feature_image: feature_image.url })
-    }, { source: "html" });
+    const post = await this.adminAPI.posts.add(
+      {
+        title,
+        html,
+        tags,
+        status: "draft",
+        ...(feature_image && { feature_image: feature_image.url }),
+      },
+      { source: "html" },
+    );
     return GhostPostToBlogPost(post);
   }
 
