@@ -10,8 +10,8 @@ export const GhostAccountBlogSchema = z
   .prefault({});
 
 export const GhostAccountSchema = z.object({
-  url: z.string(),
-  apiKey: z.string(),
+  url: z.string().meta({ description: "Ghost site URL" }),
+  apiKey: z.string().meta({ sensitive: true, description: "Ghost Admin API key" }),
   blog: GhostAccountBlogSchema,
   cdn: GhostAccountCDNSchema,
 });
@@ -26,13 +26,13 @@ export type GhostAccountBlog = z.output<typeof GhostAccountBlogSchema>;
 export type GhostAccountCDN = z.output<typeof GhostAccountCDNSchema>;
 export const GhostBlogProviderOptionsSchema = z.object({
   url: z.string(),
-  apiKey: z.string(),
+  apiKey: z.string().meta({ sensitive: true, description: "Ghost Admin API key" }),
   cdn: z.string(),
   description: z.string(),
 });
 export type GhostBlogProviderOptions = z.infer<typeof GhostBlogProviderOptionsSchema>;
 export const GhostCDNProviderOptionsSchema = z.object({
   url: z.string(),
-  apiKey: z.string(),
+  apiKey: z.string().meta({ sensitive: true, description: "Ghost Admin API key" }),
 });
 export type GhostCDNProviderOptions = z.infer<typeof GhostCDNProviderOptionsSchema>;
