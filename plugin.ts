@@ -14,7 +14,7 @@ export default {
   version: packageJSON.version,
   description: packageJSON.description,
   install(app) {
-    app.addServices(new GhostIOService());
+    app.addService(new GhostIOService());
   },
   reconfigure(app, config) {
     app.requireService(GhostIOService).reconfigure(config.ghost.accounts, app);

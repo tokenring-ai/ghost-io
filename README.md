@@ -487,7 +487,7 @@ After configuration, the `GhostBlogProvider` is registered with the `BlogService
 import { BlogService } from "@tokenring-ai/blog";
 
 // In a tool or service
-const blogService = agent.requireServiceByType(BlogService);
+const blogService = agent.requireService(BlogService);
 const provider = blogService.getBlog("my-blog"); // Get specific provider by name
 
 // Get all posts
@@ -499,7 +499,7 @@ const allPosts = await provider.getAllPosts();
 ```typescript
 import { BlogService } from "@tokenring-ai/blog";
 
-const blogService = agent.requireServiceByType(BlogService);
+const blogService = agent.requireService(BlogService);
 const provider = blogService.getBlog("my-ghost-blog");
 
 // Create a new post
@@ -520,7 +520,7 @@ console.log("Created post:", newPost.id, newPost.title);
 ```typescript
 import { CDNService } from "@tokenring-ai/cdn";
 
-const cdnService = agent.requireServiceByType(CDNService);
+const cdnService = agent.requireService(CDNService);
 
 // Get specific CDN provider by name
 const provider = cdnService.getProvider("my-ghost-blog");
@@ -541,7 +541,7 @@ console.log("Uploaded to:", result.url);
 ```typescript
 import { BlogService } from "@tokenring-ai/blog";
 
-const blogService = agent.requireServiceByType(BlogService);
+const blogService = agent.requireService(BlogService);
 const provider = blogService.getBlog("my-ghost-blog");
 
 // Get all posts from Ghost
@@ -570,7 +570,7 @@ recentPosts.forEach(post => {
 ```typescript
 import { BlogService } from "@tokenring-ai/blog";
 
-const blogService = agent.requireServiceByType(BlogService);
+const blogService = agent.requireService(BlogService);
 const provider = blogService.getBlog("my-ghost-blog");
 
 // First get the post
